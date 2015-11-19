@@ -740,6 +740,9 @@ class ArchivesSpaceClient(object):
         })
         self._post(parent_archival_object, data=json.dumps(parent_record))
 
+        new_object['id'] = new_object_uri
+        return new_object
+
     def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
         parent_record = self.get_record(parent_digital_object)
         repository = parent_record['repository']['ref']
