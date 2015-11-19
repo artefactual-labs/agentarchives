@@ -397,6 +397,9 @@ class ArchivistsToolkitClient(object):
 
         return resources_augmented
 
+    def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
+        raise NotImplementedError("Archivist's Toolkit does not have digital object components")
+
     def count_collections(self, search_pattern='', identifier=''):
         return len(self.find_collection_ids(search_pattern, identifier))
 

@@ -740,6 +740,26 @@ class ArchivesSpaceClient(object):
         })
         self._post(parent_archival_object, data=json.dumps(parent_record))
 
+    def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
+        parent_record = self.get_record(parent_digital_object)
+        repository = parent_record['repository']['ref']
+
+        new_object = {
+            'digital_object': {'ref': parent_digital_object},
+            'jsonmodel_type': 'digital_object_component',
+        }
+        if parent_digital_object_component is not None:
+            new_object['parent'] = {'ref': parent_digital_object_component}
+        if label is not None:
+            new_object['label'] = label
+        if title is not None:
+            new_object['title'] = title
+
+        new_object_uri = self._post(repository + '/digital_object_components', data=json.dumps(new_object)).json()['uri']
+        new_object['id'] = new_object_uri
+
+        return new_object
+
     def add_child(self, parent, title="", level="", start_date="", end_date="", date_expression="", note={}):
         """
         Adds a new resource component parented within `parent`.

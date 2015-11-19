@@ -237,3 +237,25 @@ def test_edit_archival_object():
     assert updated['dates'][0]['expression'] == new_record['date_expression']
     assert updated['notes'][0]['type'] == new_record['notes'][0]['type']
     assert updated['notes'][0]['subnotes'][0]['content'] == new_record['notes'][0]['content']
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object_component.yaml'))
+def test_add_digital_object_component():
+    client = ArchivesSpaceClient(**AUTH)
+    doc = client.add_digital_object_component('/repositories/2/digital_objects/1',
+                                              label='Test DOC',
+                                              title='This is a test DOC')
+    assert doc['id'] == '/repositories/2/digital_object_components/3'
+    assert doc['label'] == 'Test DOC'
+    assert doc['title'] == 'This is a test DOC'
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_nested_digital_object_component.yaml'))
+def test_add_nested_digital_object_component():
+    client = ArchivesSpaceClient(**AUTH)
+    parent = '/repositories/2/digital_object_components/3'
+    doc = client.add_digital_object_component('/repositories/2/digital_objects/1',
+                                              parent_digital_object_component=parent,
+                                              label='Child DOC',
+                                              title='This is a child DOC')
+    assert client.get_record(doc['id'])['parent']['ref'] == parent

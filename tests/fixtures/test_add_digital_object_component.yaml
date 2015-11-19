@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: !!binary |
+      cGFzc3dvcmQ9YWRtaW4mZXhwaXJpbmc9RmFsc2U=
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['29']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.8.1]
+    method: POST
+    uri: http://localhost:8089/users/admin/login
+  response:
+    body: {string: '{"session":"8f0bce11c556e20e7ba67b6501ace4275f3d9f6bc570fd9ebe6cab5aaeaa9d88","user":{"lock_version":703,"username":"admin","name":"Administrator","is_system_user":true,"create_time":"2015-06-11T17:04:21Z","system_mtime":"2015-12-03T01:06:21Z","user_mtime":"2015-12-03T01:06:21Z","jsonmodel_type":"user","groups":[],"is_admin":true,"uri":"/users/1","agent_record":{"ref":"/agents/people/1"},"permissions":{"/repositories/1":["update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record","administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed"],"_archivesspace":["administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed","update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record"]}}}
+
+'}
+    headers:
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['2206']
+      Content-Type: [application/json]
+      Date: ['Thu, 03 Dec 2015 01:06:21 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.8.1]
+      X-ArchivesSpace-Session: [8f0bce11c556e20e7ba67b6501ace4275f3d9f6bc570fd9ebe6cab5aaeaa9d88]
+    method: GET
+    uri: http://localhost:8089/repositories/2/digital_objects/1
+  response:
+    body: {string: '{"lock_version":0,"digital_object_id":"1","title":"Test digi object","publish":false,"restrictions":false,"created_by":"admin","last_modified_by":"admin","create_time":"2015-11-18T21:29:33Z","system_mtime":"2015-11-18T21:29:33Z","user_mtime":"2015-11-18T21:29:33Z","suppressed":false,"jsonmodel_type":"digital_object","external_ids":[],"subjects":[],"linked_events":[],"extents":[],"dates":[],"external_documents":[],"rights_statements":[],"linked_agents":[],"file_versions":[],"notes":[],"linked_instances":[],"uri":"/repositories/2/digital_objects/1","repository":{"ref":"/repositories/2"},"tree":{"ref":"/repositories/2/digital_objects/1/tree"}}
+
+'}
+    headers:
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['649']
+      Content-Type: [application/json]
+      Date: ['Thu, 03 Dec 2015 01:06:21 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
+    status: {code: 200, message: OK}
+- request:
+    body: !!binary |
+      eyJqc29ubW9kZWxfdHlwZSI6ICJkaWdpdGFsX29iamVjdF9jb21wb25lbnQiLCAibGFiZWwiOiAi
+      VGVzdCBET0MiLCAidGl0bGUiOiAiVGhpcyBpcyBhIHRlc3QgRE9DIiwgImRpZ2l0YWxfb2JqZWN0
+      IjogeyJyZWYiOiAiL3JlcG9zaXRvcmllcy8yL2RpZ2l0YWxfb2JqZWN0cy8xIn19
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['162']
+      User-Agent: [python-requests/2.8.1]
+      X-ArchivesSpace-Session: [8f0bce11c556e20e7ba67b6501ace4275f3d9f6bc570fd9ebe6cab5aaeaa9d88]
+    method: POST
+    uri: http://localhost:8089/repositories/2/digital_object_components
+  response:
+    body: {string: '{"status":"Created","id":3,"lock_version":0,"stale":true,"uri":"/repositories/2/digital_object_components/3","warnings":[]}
+
+'}
+    headers:
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['124']
+      Content-Type: [application/json]
+      Date: ['Thu, 03 Dec 2015 01:06:21 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1
