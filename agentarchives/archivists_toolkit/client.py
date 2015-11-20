@@ -397,6 +397,9 @@ class ArchivistsToolkitClient(object):
 
         return resources_augmented
 
+    def add_digital_object(self, parent_archival_object, identifier, title="", uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None):
+        raise NotImplementedError("add_digital_object has not yet been implemented")
+
     def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
         raise NotImplementedError("Archivist's Toolkit does not have digital object components")
 
