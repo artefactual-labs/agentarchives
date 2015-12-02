@@ -624,7 +624,7 @@ class ArchivesSpaceClient(object):
 
         return resources_augmented
 
-    def add_digital_object(self, parent_archival_object, dashboard_uuid, identifier, title=None, uri=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None):
+    def add_digital_object(self, parent_archival_object, identifier, title=None, uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None):
         """
         Creates a new digital object.
 
@@ -632,6 +632,7 @@ class ArchivesSpaceClient(object):
         :param string identifier: A unique identifier for the digital object, in any format.
         :param string title: The title of the digital object.
         :param string uri: The URI to an instantiation of the digital object.
+        :param string location_of_originals: If provided, will create an `originalsloc` (location of originals) note in the digital object using this text.
         :param string object_type: The type of the digital object.
             Defaults to "text".
         :param string xlink_show: Controls how the file will be displayed.
@@ -659,16 +660,18 @@ class ArchivesSpaceClient(object):
             "digital_object_id": identifier,
             "digital_object_type": object_type,
             "language": language,
-            "notes": [{
-                "jsonmodel_type": "note_digital_object",
-                "type": "originalsloc",
-                "content": [dashboard_uuid],
-                "publish": True,
-            }],
             "restrictions": restricted,
             "subjects": parent_record['subjects'],
             "linked_agents": parent_record['linked_agents'],
         }
+
+        if location_of_originals is not None:
+            new_object["notes"] = [{
+                "jsonmodel_type": "note_digital_object",
+                "type": "originalsloc",
+                "content": [location_of_originals],
+                "publish": True,
+            }]
 
         if uri is not None:
             new_object["file_versions"] = [{
