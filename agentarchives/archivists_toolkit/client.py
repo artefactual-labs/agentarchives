@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
+__all__ = ['ArchivistsToolkitError', 'ArchivistsToolkitClient']
+
+
 class ArchivistsToolkitError(Exception):
     pass
 
