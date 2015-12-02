@@ -1,0 +1,2 @@
+requests>=2,<3
+MySQL-python>=1.2,<2
