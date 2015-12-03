@@ -342,7 +342,6 @@ class ArchivesSpaceClient(object):
             return self._get(resource_id + '/children').json()
 
         def format_record(record, level):
-            level += 1
             dates = self._fetch_dates_from_record(record)
 
             result = {
@@ -358,7 +357,7 @@ class ArchivesSpaceClient(object):
 
             children = fetch_children(record['uri'])
             if children and not recurse_max_level == level:
-                result['children'] = [format_record(child, level) for child in children]
+                result['children'] = [format_record(child, level + 1) for child in children]
                 if sort_by is not None:
                     kwargs = {'reverse': True} if sort_by == 'desc' else {}
                     result['children'] = sorted(children, key=lambda c: c['title'], **kwargs)
