@@ -3,7 +3,10 @@ import logging
 import os
 import re
 import requests
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 __all__ = ['ArchivesSpaceError', 'ConnectionError', 'AuthenticationError', 'ArchivesSpaceClient']
 
@@ -178,7 +181,7 @@ class ArchivesSpaceClient(object):
         # TODO: add more fields?
         field_map = {'title': 'title', 'level': 'levelOfDescription'}
         fields_updated = False
-        for field, targetfield in field_map.iteritems():
+        for field, targetfield in field_map.items():
             try:
                 record[targetfield] = new_record[field]
                 fields_updated = True
