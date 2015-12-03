@@ -313,7 +313,7 @@ class ArchivesSpaceClient(object):
                 'type': 'resource',
                 'sortPosition': level,
                 'identifier': identifier,
-                'title': record.get('title', ''),
+                'title': full_record.get('title', ''),
                 'dates': dates,
                 'levelOfDescription': record['level'],
                 'notes': self._format_notes(full_record),
