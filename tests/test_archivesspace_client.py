@@ -23,6 +23,16 @@ def test_listing_collections():
     assert collections[0]['type'] == 'resource'
 
 
+# The cassette for this test contains a record with a singlepart note, which
+# raised errors in a previous version of ArchivesSpaceClient.
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_singlepart_note.yaml'))
+def test_rendering_record_containing_a_singlepart_note():
+    client = ArchivesSpaceClient(**AUTH)
+    collections = client.find_collections()
+    assert len(collections) == 2
+    assert collections[1]['notes'][0]['content'] == 'Singlepart note'
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections_search.yaml'))
 def test_listing_collections_search():
     client = ArchivesSpaceClient(**AUTH)

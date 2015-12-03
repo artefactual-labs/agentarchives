@@ -123,7 +123,10 @@ class ArchivesSpaceClient(object):
             n = {}
             n['type'] = note['type']
             try:
-                n['content'] = note['subnotes'][0]['content']
+                if note['jsonmodel_type'] == 'note_singlepart':
+                    n['content'] = note['content'][0]
+                else:
+                    n['content'] = note['subnotes'][0]['content']
             except IndexError:
                 n['content'] = ''
 
