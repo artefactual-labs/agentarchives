@@ -1,6 +1,6 @@
 import logging
 
-import MySQLdb
+import pymysql as MySQLdb
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
