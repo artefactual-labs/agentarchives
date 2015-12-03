@@ -318,6 +318,8 @@ class ArchivesSpaceClient(object):
                 'levelOfDescription': record['level'],
                 'notes': self._format_notes(full_record),
             }
+            if full_record.get('display_string') is not None:
+                result['display_title'] = full_record['display_string']
             if record['children'] and descend:
                 result['children'] = [format_record(child, level) for child in record['children']]
                 result['has_children'] = True
@@ -350,6 +352,7 @@ class ArchivesSpaceClient(object):
                 'sortPosition': level,
                 'identifier': record.get('component_id', ''),
                 'title': record.get('title', ''),
+                'display_title': record.get('display_string', ''),
                 'dates': dates,
                 'levelOfDescription': record['level'],
                 'notes': self._format_notes(record),
