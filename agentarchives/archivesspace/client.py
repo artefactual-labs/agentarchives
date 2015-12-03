@@ -800,9 +800,9 @@ class ArchivesSpaceClient(object):
             if end_date:
                 date['end'] = end_date
 
-        if note:
+        if note and note.get('content'):
             note_type = note.get('type', 'odd')
-            content = note.get('content', '')
+            content = note.get['content']
             new_note = {
                 'jsonmodel_type': 'note_multipart',
                 'publish': True,
