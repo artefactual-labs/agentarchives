@@ -666,18 +666,19 @@ class ArchivesSpaceClient(object):
             "digital_object_id": identifier,
             "digital_object_type": object_type,
             "language": language,
+            "notes": [],
             "restrictions": restricted,
             "subjects": parent_record['subjects'],
             "linked_agents": parent_record['linked_agents'],
         }
 
         if location_of_originals is not None:
-            new_object["notes"] = [{
+            new_object["notes"].append({
                 "jsonmodel_type": "note_digital_object",
                 "type": "originalsloc",
                 "content": [location_of_originals],
                 "publish": True,
-            }]
+            })
 
         if uri is not None:
             new_object["file_versions"] = [{
