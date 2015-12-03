@@ -239,6 +239,27 @@ def test_edit_archival_object():
     assert updated['notes'][0]['subnotes'][0]['content'] == new_record['notes'][0]['content']
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object.yaml'))
+def test_add_digital_object():
+    client = ArchivesSpaceClient(**AUTH)
+    do = client.add_digital_object('/repositories/2/archival_objects/3',
+                                   identifier='38c99e89-20a1-4831-ba57-813fb6420e59',
+                                   title='Test digital object')
+    assert do['id'] == '/repositories/2/digital_objects/8'
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object_note.yaml'))
+def test_digital_object_with_location_of_originals_note():
+    client = ArchivesSpaceClient(**AUTH)
+    do = client.add_digital_object('/repositories/2/archival_objects/3',
+                                   identifier='925bfc8a-d6f8-4479-9b6a-d811a4e7f6bf',
+                                   title='Test digital object with note',
+                                   location_of_originals='The ether')
+    note = client.get_record(do['id'])['notes'][0]
+    assert note['content'][0] == 'The ether'
+    assert note['type'] == 'originalsloc'
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object_component.yaml'))
 def test_add_digital_object_component():
     client = ArchivesSpaceClient(**AUTH)
