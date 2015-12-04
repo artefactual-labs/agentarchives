@@ -288,15 +288,23 @@ class ArchivesSpaceClient(object):
             return start
 
     def _fetch_dates_from_record(self, record):
-        if not record.get('dates'):
-            return ''
-        elif 'expression' in record['dates'][0]:
-            return record['dates'][0]['expression']
-        # use the first date, though there can be multiple sets
-        else:
-            start_date = record['dates'][0]['begin']
+        dates = self._fetch_date_expression_from_record(record)
+        if not dates:
+            try:
+                start_date = record['dates'][0]['begin']
+            except IndexError:
+                return ''
             end_date = record['dates'][0].get('end')
             return self._format_dates(start_date, end_date)
+
+    def _fetch_date_expression_from_record(self, record):
+        if not record.get('dates'):
+            return ''
+        # use the first date, though there can be multiple sets
+        elif 'expression' in record['dates'][0]:
+            return record['dates'][0]['expression']
+        else:
+            return ''
 
     def _get_resources(self, resource_id, level=1, recurse_max_level=False, sort_by=None):
         def format_record(record, level):
@@ -305,6 +313,7 @@ class ArchivesSpaceClient(object):
 
             full_record = self._get(record['record_uri']).json()
             dates = self._fetch_dates_from_record(full_record)
+            date_expression = self._fetch_date_expression_from_record(full_record)
 
             identifier = full_record['id_0'] if 'id_0' in full_record else full_record.get('component_id', '')
 
@@ -315,6 +324,7 @@ class ArchivesSpaceClient(object):
                 'identifier': identifier,
                 'title': full_record.get('title', ''),
                 'dates': dates,
+                'date_expression': date_expression,
                 'levelOfDescription': record['level'],
                 'notes': self._format_notes(full_record),
             }
@@ -345,6 +355,7 @@ class ArchivesSpaceClient(object):
 
         def format_record(record, level):
             dates = self._fetch_dates_from_record(record)
+            date_expression = self._fetch_date_expression_from_record(record)
 
             result = {
                 'id': record['uri'],
@@ -354,6 +365,7 @@ class ArchivesSpaceClient(object):
                 'title': record.get('title', ''),
                 'display_title': record.get('display_string', ''),
                 'dates': dates,
+                'date_expression': date_expression,
                 'levelOfDescription': record['level'],
                 'notes': self._format_notes(record),
             }
@@ -496,6 +508,7 @@ class ArchivesSpaceClient(object):
         """
         def format_record(record):
             dates = self._fetch_dates_from_record(record)
+            date_expression = self._fetch_date_expression_from_record(record)
             identifier = record['id_0'] if 'id_0' in record else record.get('component_id', '')
 
             has_children = len(self._get(record['uri'] + '/tree', params={'page': 1}).json()['children']) > 0
@@ -507,6 +520,7 @@ class ArchivesSpaceClient(object):
                 'identifier': identifier,
                 'title': record.get('title', ''),
                 'dates': dates,
+                'date_expression': date_expression,
                 'levelOfDescription': record['level'],
                 'children': [] if has_children else False,
                 'has_children': has_children,

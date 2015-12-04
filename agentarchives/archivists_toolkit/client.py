@@ -161,6 +161,7 @@ class ArchivistsToolkitClient(object):
           'title': 'Parent',
           'levelOfDescription': 'collection',
           'dates': '1880-1889',
+          'date_expression': '1880 to 1889',
           'notes': [
             'type': 'odd',
             'content': 'This is a note',
@@ -173,6 +174,7 @@ class ArchivistsToolkitClient(object):
             'title': 'Child A',
             'levelOfDescription': 'Sousfonds',
             'dates': '1880-1888',
+            'date_expression': '1880 to 1888',
             'notes': [],
             'children': [{
               'id': '24',
@@ -182,6 +184,7 @@ class ArchivistsToolkitClient(object):
               'title': 'Grandchild A',
               'levelOfDescription': 'Item',
               'dates': '1880-1888',
+              'date_expression': '1880 to 1888',
               'notes': [],
               'children': False
             },
@@ -204,6 +207,7 @@ class ArchivistsToolkitClient(object):
             'title': 'Child B',
             'levelOfDescription': 'Sousfonds',
             'dates': '1889',
+            'date_expression': '1889',
             'notes': [],
             'children': False
           }]
@@ -234,7 +238,9 @@ class ArchivistsToolkitClient(object):
                 resource_data['type']               = 'resource'
                 resource_data['sortPosition']       = sort_data['position']
                 resource_data['title']              = row[0]
+                # TODO reformat dates from the separate date fields, like ArchivesSpaceClient?
                 resource_data['dates']              = row[1]
+                resource_data['date_expression']    = row[1]
                 resource_data['identifier']         = row[2]
                 resource_data['levelOfDescription'] = row[3]
         else:
@@ -246,6 +252,7 @@ class ArchivistsToolkitClient(object):
                 resource_data['sortPosition']       = sort_data['position']
                 resource_data['title']              = row[0]
                 resource_data['dates']              = row[1]
+                resource_data['date_expression']    = row[1]
                 resource_data['identifier']         = row[2]
                 resource_data['levelOfDescription'] = row[3]
 

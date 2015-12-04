@@ -280,3 +280,25 @@ def test_add_nested_digital_object_component():
                                               label='Child DOC',
                                               title='This is a child DOC')
     assert client.get_record(doc['id'])['parent']['ref'] == parent
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_date_expression.yaml'))
+def test_date_expression():
+    client = ArchivesSpaceClient(**AUTH)
+    record = client.get_resource_component_and_children('/repositories/2/archival_objects/3',
+                                                        recurse_max_level=1)
+    assert record['date_expression'] == 'November, 2014 to November, 2015'
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_empty_dates.yaml'))
+def test_empty_dates():
+    client = ArchivesSpaceClient(**AUTH)
+    record = client.get_resource_component_children('/repositories/2/archival_objects/2')
+    assert record['dates'] == ''
+    assert record['date_expression'] == ''
+    record = client.get_resource_component_and_children('/repositories/2/resources/2',
+                                                        recurse_max_level=1)
+    # dates are mandatory for resources, so this record does have a date but no expression
+    assert record['date_expression'] == ''
+    collections = client.find_collections()
+    assert collections[0]['date_expression'] == ''
