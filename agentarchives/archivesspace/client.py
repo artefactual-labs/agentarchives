@@ -376,8 +376,13 @@ class ArchivesSpaceClient(object):
                 if sort_by is not None:
                     kwargs = {'reverse': True} if sort_by == 'desc' else {}
                     result['children'] = sorted(children, key=lambda c: c['title'], **kwargs)
+                result['has_children'] = True
+            elif children:
+                result['children'] = []
+                result['has_children'] = True
             else:
                 result['children'] = False
+                result['has_children'] = False
 
             return result
 

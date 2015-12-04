@@ -100,6 +100,24 @@ def test_find_resource_children_recursion_level():
     assert len(data['children']) == 2
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_resource_children_at_max_recursion_level.yaml'))
+def test_find_resource_children_at_max_recursion_level():
+    client = ArchivesSpaceClient(**AUTH)
+    record = client.get_resource_component_and_children('/repositories/2/resources/1',
+                                                        recurse_max_level=1)
+    assert record['children'] == []
+    assert record['has_children'] is True
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_resource_component_children_at_max_recursion_level.yaml'))
+def test_find_resource_component_children_at_max_recursion_level():
+    client = ArchivesSpaceClient(**AUTH)
+    record = client.get_resource_component_and_children('/repositories/2/archival_objects/1',
+                                                        recurse_max_level=1)
+    assert record['children'] == []
+    assert record['has_children'] is True
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_collection_ids.yaml'))
 def test_find_collection_ids():
     client = ArchivesSpaceClient(**AUTH)
