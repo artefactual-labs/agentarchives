@@ -85,8 +85,10 @@ def test_find_resource_children():
 
     assert type(data) == dict
     assert len(data['children']) == 2
+    assert data['has_children'] is True
     assert data['title'] == 'Test fonds'
     assert data['type'] == 'resource'
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_resource_children_recursion.yaml'))
 def test_find_resource_children_recursion_level():
@@ -94,10 +96,12 @@ def test_find_resource_children_recursion_level():
     data = client.get_resource_component_and_children('/repositories/2/resources/1',
                                                       recurse_max_level=1)
     assert data['children'] == []
+    assert data['has_children'] is True
 
     data = client.get_resource_component_and_children('/repositories/2/resources/1',
                                                       recurse_max_level=2)
     assert len(data['children']) == 2
+    assert data['has_children'] is True
 
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_resource_children_at_max_recursion_level.yaml'))
