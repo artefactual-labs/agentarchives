@@ -445,7 +445,7 @@ class ArchivistsToolkitClient(object):
         cursor.execute(sql, (archdesc_id, parent_archival_object))
 
         if inherit_dates:
-            start_date, end_date, date_expression = self._fetch_resource_dates(cursor, parent_archival_object, is_resource=is_resource)
+            start_date, end_date, date_expression = self._fetch_dates(cursor, parent_archival_object, is_resource=is_resource)
         else:
             start_date = end_date = date_expression = None
 

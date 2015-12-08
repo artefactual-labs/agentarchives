@@ -651,7 +651,7 @@ class ArchivesSpaceClient(object):
 
         return resources_augmented
 
-    def add_digital_object(self, parent_archival_object, identifier, title=None, uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None):
+    def add_digital_object(self, parent_archival_object, identifier, title=None, uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None, inherit_dates=False):
         """
         Creates a new digital object.
 
@@ -692,6 +692,9 @@ class ArchivesSpaceClient(object):
             "subjects": parent_record['subjects'],
             "linked_agents": parent_record['linked_agents'],
         }
+
+        if inherit_dates:
+            new_object['dates'] = parent_record['dates']
 
         if location_of_originals is not None:
             new_object["notes"].append({
