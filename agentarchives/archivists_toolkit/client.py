@@ -1,4 +1,6 @@
 import logging
+import os
+from time import localtime, strftime
 
 import pymysql as MySQLdb
 
@@ -20,6 +22,7 @@ class ArchivistsToolkitClient(object):
 
     def __init__(self, host, user, passwd, db):
         try:
+            self.user = user
             self.db = MySQLdb.connect(host=host,
                                       user=user,
                                       passwd=passwd,
@@ -404,8 +407,86 @@ class ArchivistsToolkitClient(object):
 
         return resources_augmented
 
-    def add_digital_object(self, parent_archival_object, identifier, title="", uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None):
-        raise NotImplementedError("add_digital_object has not yet been implemented")
+    def _query_table(self, cursor, sql, resource_id, is_resource=True):
+        if is_resource:
+            table = 'Resources'
+            id_column = 'resourceId'
+        else:
+            table = 'ResourcesComponents'
+            id_column = 'resourceComponentId'
+        cursor.execute(sql.format(table, id_column), (resource_id,))
+        return cursor.fetchone()
+
+    def _fetch_dates(self, cursor, resource_id, is_resource=True):
+        return self._query_table(cursor, "SELECT dateBegin, dateEnd, dateExpression FROM {} WHERE {}=%s", resource_id, is_resource=is_resource)
+
+    def _fetch_title(self, cursor, resource_id, is_resource=True):
+        return self._query_table(cursor, "SELECT title FROM {} WHERE {}=%s", resource_id, is_resource=is_resource)
+
+    def add_digital_object(self, parent_archival_object, identifier, title="", uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None, inherit_dates=False):
+        cursor = self.db.cursor()
+        time_now = strftime("%Y-%m-%d %H:%M:%S", localtime())
+
+        is_resource = self.resource_type(parent_archival_object) == 'resource'
+
+        cursor.execute("SELECT MAX(archDescriptionInstancesId) FROM ArchDescriptionInstances")
+        archdesc_id = cursor.fetchone()[0] + 1
+        cursor.execute("SELECT repositoryId FROM Repositories")
+        repo_id = cursor.fetchone()[0]
+        cursor.execute("SELECT MAX(fileVersionId) FROM FileVersions")
+        file_version_id = cursor.fetchone()[0] + 1
+        cursor.execute("SELECT MAX(archdescriptionrepeatingdataId) FROM ArchDescriptionRepeatingData")
+        new_desc_repeat_id = cursor.fetchone()[0] + 1
+
+        if is_resource:
+            sql = "INSERT INTO ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceId) VALUES (%s, 'digital', 'Digital object', %s)"
+        else:
+            sql = "INSERT INTO ArchDescriptionInstances (archDescriptionInstancesId, instanceDescriminator, instanceType, resourceComponentId) VALUES (%s, 'digital', 'Digital object', %s)"
+        cursor.execute(sql, (archdesc_id, parent_archival_object))
+
+        if inherit_dates:
+            start_date, end_date, date_expression = self._fetch_resource_dates(cursor, parent_archival_object, is_resource=is_resource)
+        else:
+            start_date = end_date = date_expression = None
+
+        if not title:
+            filename = os.path.basename(uri) if uri is not None else 'Untitled'
+            title, = self._fetch_title(cursor, parent_archival_object, is_resource=is_resource)
+            title = title or filename
+
+        sql = """INSERT INTO DigitalObjects
+           (`version`,`lastUpdated`,`created`,`lastUpdatedBy`,`createdBy`,`title`,
+            `dateExpression`,`dateBegin`,`dateEnd`,`languageCode`,`restrictionsApply`,
+            `eadDaoActuate`,`eadDaoShow`,`metsIdentifier`,`objectType`,`label`,
+            `objectOrder`,`archDescriptionInstancesId`,`repositoryId`)
+            VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, 'English', %s, %s, %s, %s, %s,' ',  0, %s, %s)"""
+        cursor.execute(sql, (time_now, time_now, self.user, self.user, title, date_expression, start_date, end_date, int(restricted), xlink_actuate, xlink_show, identifier, object_type, archdesc_id, repo_id))
+        do_id = cursor.lastrowid
+
+        sql = """INSERT INTO FileVersions (fileVersionId, version, lastUpdated, created, lastUpdatedBy, createdBy, uri, useStatement, sequenceNumber, eadDaoActuate,eadDaoShow, digitalObjectId)
+            VALUES (%s, 1, %s, %s, %s, %s, %s, %s, 0, %s, %s, %s)"""
+        cursor.execute(sql, (file_version_id, time_now, time_now, self.user, self.user, uri, use_statement, 0, xlink_actuate, xlink_show, do_id))
+
+        seq_num = 0
+        sql = """INSERT INTO ArchDescriptionRepeatingData
+            (archDescriptionRepeatingDataId, descriminator, version, lastUpdated, created, lastUpdatedBy ,createdBy, repeatingDataType, title, sequenceNumber,
+            eadIngestProblem, digitalObjectId, noteContent, notesEtcTypeId, basic, multiPart, internalOnly)
+            VALUES (%s, 'note', 0, %s, %s, %s, %s, 'Note', '', %s, '', %s, %s, %s, '', '', '')"""
+        # existence and location of originals note
+        if location_of_originals is not None:
+            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, location_of_originals, 13))
+            new_desc_repeat_id += 1
+            seq_num += 1
+
+        # conditions governing access note
+        if access_conditions is not None:
+            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, access_conditions, 8))
+            new_desc_repeat_id += 1
+            seq_num += 1
+
+        # conditions governing use note
+        if use_conditions is not None:
+            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, use_conditions, 9))
 
     def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
         raise NotImplementedError("Archivist's Toolkit does not have digital object components")
