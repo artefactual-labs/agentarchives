@@ -130,7 +130,7 @@ class ArchivesSpaceClient(object):
                     n['content'] = note['content'][0]
                 else:
                     n['content'] = note['subnotes'][0]['content']
-            except IndexError:
+            except (IndexError, KeyError):
                 n['content'] = ''
 
             notes.append(n)
