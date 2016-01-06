@@ -3,12 +3,7 @@ Clients to retrieve, add, and modify records from archival management systems
 
 ## Installation
 
-### Clone repository
-`git@github.com:artefactual-labs/agentarchives.git`
-
-### Install module
-`cd agentarchives`
-`sudo python setup.py install`
+`pip install git+https://github.com/artefactual-labs/agentarchives.git`
 
 ##Usage
 This library can be used to interact with both [Archivists Toolkit](http://archiviststoolkit.org/) as well as [ArchivesSpace](http://archivesspace.org/)
