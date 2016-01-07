@@ -334,3 +334,11 @@ def test_empty_dates():
     assert record['date_expression'] == ''
     collections = client.find_collections()
     assert collections[0]['date_expression'] == ''
+
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_contentless_notes.yaml'))
+def test_contentless_notes():
+    client = ArchivesSpaceClient(**AUTH)
+    collections = client.find_collections()
+    assert collections[-1]['notes'][0]['type'] == 'bioghist'
+    assert collections[-1]['notes'][0]['content'] == ''
