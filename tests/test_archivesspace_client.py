@@ -282,6 +282,16 @@ def test_digital_object_with_location_of_originals_note():
     assert note['type'] == 'originalsloc'
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_adding_a_digital_object_to_a_record_with_a_singlepart_note.yaml'))
+def test_adding_a_digital_object_to_a_record_with_a_singlepart_note():
+    client = ArchivesSpaceClient(**AUTH)
+    do = client.add_digital_object('/repositories/2/archival_objects/21',
+                                   identifier='5f464db2-9365-492f-b7c7-7958baeb0388',
+                                   title='Test digital object whose parent has a singlepart note')
+    note = client.get_record(do['id'])['notes'][0]
+    assert len(note['content']) == 1
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object_component.yaml'))
 def test_add_digital_object_component():
     client = ArchivesSpaceClient(**AUTH)
