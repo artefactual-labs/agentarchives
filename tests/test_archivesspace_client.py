@@ -213,6 +213,15 @@ def test_add_child_resource_component():
     uri = client.add_child('/repositories/2/archival_objects/1', title='Test child', level='item')
     assert uri == '/repositories/2/archival_objects/5'
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_adding_child_with_note.yaml'))
+def test_adding_child_with_note():
+    client = ArchivesSpaceClient(**AUTH)
+    uri = client.add_child('/repositories/2/resources/5',
+                           title='Test child',
+                           level='item',
+                           note={'type': 'odd', 'content': 'This is a test note'})
+    assert uri == '/repositories/2/archival_objects/24'
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_delete_record_resource.yaml'))
 def test_delete_record_resource():
     client = ArchivesSpaceClient(**AUTH)
