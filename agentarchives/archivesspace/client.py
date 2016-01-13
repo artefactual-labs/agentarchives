@@ -725,7 +725,7 @@ class ArchivesSpaceClient(object):
                 "jsonmodel_type": "note_digital_object",
                 "type": "originalsloc",
                 "content": [location_of_originals],
-                "publish": True,
+                "publish": False,
             })
 
         if uri is not None:
