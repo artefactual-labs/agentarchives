@@ -825,7 +825,9 @@ class ArchivesSpaceClient(object):
             if end_date:
                 date['end'] = end_date
 
-        if note and 'content' in note:
+        # If there is a note, but it's an empty string, skip this;
+        # ArchivesSpace doesn't allow subnote content to be empty.
+        if note and note.get('content', ''):
             note_type = note.get('type', 'odd')
             content = note['content']
             new_note = {
