@@ -2,7 +2,7 @@ import logging
 import os
 from time import localtime, strftime
 
-import pymysql as MySQLdb
+import MySQLdb
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

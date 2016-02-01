@@ -8,5 +8,5 @@ setup(
     license="AGPL 3",
     version="0.1",
     packages=["agentarchives", "agentarchives.archivesspace", "agentarchives.archivists_toolkit"],
-    install_requires=["requests>=2,<3", "pymysql>=0.6,<1"],
+    install_requires=["requests>=2,<3", "mysqlclient>=1.3,<2"],
 )
