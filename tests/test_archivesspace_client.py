@@ -279,6 +279,26 @@ def test_edit_archival_object():
     assert updated['notes'][0]['subnotes'][0]['content'] == new_record['notes'][0]['content']
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_edit_record_empty_note.yaml'))
+def test_edit_record_empty_note():
+    client = ArchivesSpaceClient(**AUTH)
+    original = client.get_record('/repositories/2/archival_objects/3')
+    assert original['notes']
+    new_record = {
+        'id': '/repositories/2/archival_objects/3',
+        'title': 'Test edited subseries w/ empty note',
+        'start_date': '2014-11-01',
+        'end_date': '2015-11-01',
+        'date_expression': 'November, 2014 to November, 2015',
+        'notes': [{
+            'type': 'odd',
+            'content': ''
+        }],
+    }
+    client.edit_record(new_record)
+    updated = client.get_record('/repositories/2/archival_objects/3')
+    assert not updated['notes']
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object.yaml'))
 def test_add_digital_object():
     client = ArchivesSpaceClient(**AUTH)

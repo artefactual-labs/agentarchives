@@ -188,7 +188,7 @@ class ArchivesSpaceClient(object):
             except KeyError:
                 continue
 
-        if 'notes' in new_record and new_record['notes']:
+        if 'notes' in new_record and new_record['notes'] and new_record['notes'][0].get('content', ''):
             note = new_record['notes'][0]
             new_note = {
                 'jsonmodel_type': 'note_multipart',
@@ -210,6 +210,11 @@ class ArchivesSpaceClient(object):
                 record['notes'][0] = new_note
 
             fields_updated = True
+        else:
+            # Remove existing notes if the record didn't have a valid note;
+            # a note with an empty string as content should be counted as
+            # a request to delete the note.
+            record['notes'] = []
 
         if 'start_date' in new_record:
             date = {
