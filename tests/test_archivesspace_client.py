@@ -219,7 +219,7 @@ def test_adding_child_with_note():
     uri = client.add_child('/repositories/2/resources/5',
                            title='Test child',
                            level='item',
-                           note={'type': 'odd', 'content': 'This is a test note'})
+                           notes=[{'type': 'odd', 'content': 'This is a test note'}])
     assert uri == '/repositories/2/archival_objects/24'
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_posting_contentless_note.yaml'))
@@ -228,8 +228,21 @@ def test_posting_contentless_note():
     uri = client.add_child('/repositories/2/resources/1',
                            title='Test child',
                            level='recordgrp',
-                           note={'type': 'odd', 'content': ''})
+                           notes=[{'type': 'odd', 'content': ''}])
     assert client.get_record(uri)['notes'] == []
+
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_posting_multiple_notes.yaml'))
+def test_posting_multiple_notes():
+    client = ArchivesSpaceClient(**AUTH)
+    uri = client.add_child('/repositories/2/resources/1',
+                           title='Test child',
+                           level='recordgrp',
+                           notes=[{'type': 'odd', 'content': 'General'}, {'type': 'accessrestrict', 'content': 'Access'}])
+    record = client.get_record(uri)
+    assert record['notes'][0]['type'] == 'odd'
+    assert record['notes'][0]['subnotes'][0]['content'] == 'General'
+    assert record['notes'][1]['type'] == 'accessrestrict'
+    assert record['notes'][1]['subnotes'][0]['content'] == 'Access'
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_delete_record_resource.yaml'))
 def test_delete_record_resource():

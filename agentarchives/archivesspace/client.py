@@ -794,7 +794,7 @@ class ArchivesSpaceClient(object):
 
         return new_object
 
-    def add_child(self, parent, title="", level="", start_date="", end_date="", date_expression="", note={}):
+    def add_child(self, parent, title="", level="", start_date="", end_date="", date_expression="", notes=[]):
         """
         Adds a new resource component parented within `parent`.
 
@@ -830,11 +830,14 @@ class ArchivesSpaceClient(object):
             if end_date:
                 date['end'] = end_date
 
-        # If there is a note, but it's an empty string, skip this;
-        # ArchivesSpace doesn't allow subnote content to be empty.
-        if note and note.get('content', ''):
+        new_object['notes'] = []
+        for note in notes:
             note_type = note.get('type', 'odd')
-            content = note['content']
+            # If there is a note, but it's an empty string, skip this;
+            # ArchivesSpace doesn't allow subnote content to be empty.
+            content = note.get('content')
+            if not content:
+                continue
             new_note = {
                 'jsonmodel_type': 'note_multipart',
                 'publish': True,
@@ -845,7 +848,7 @@ class ArchivesSpaceClient(object):
                 }],
                 'type': note_type,
             }
-            new_object['notes'] = [new_note]
+            new_object['notes'].append(new_note)
 
         # "parent" always refers to an archival_object instance; if this is rooted
         # directly to a resource, leave it out.
