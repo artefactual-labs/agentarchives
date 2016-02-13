@@ -1,26 +1,27 @@
 interactions:
 - request:
-    body: expiring=False&password=admin
+    body: !!binary |
+      ZXhwaXJpbmc9RmFsc2UmcGFzc3dvcmQ9YWRtaW4=
     headers:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
       Content-Length: ['29']
       Content-Type: [application/x-www-form-urlencoded]
-      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-63-generic]
+      User-Agent: [python-requests/2.9.1]
     method: POST
     uri: http://localhost:8089/users/admin/login
   response:
-    body: {string: !!python/unicode '{"session":"f8fb69f71f8e709c3286d60f9597acc256bedb44966d6465e3130f9e398fdc17","user":{"lock_version":279,"username":"admin","name":"Administrator","is_system_user":true,"create_time":"2015-06-11T17:04:21Z","system_mtime":"2015-10-27T23:39:30Z","user_mtime":"2015-10-27T23:39:30Z","jsonmodel_type":"user","groups":[],"is_admin":true,"uri":"/users/1","agent_record":{"ref":"/agents/people/1"},"permissions":{"/repositories/1":["update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record","administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed"],"_archivesspace":["administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed","update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record"]}}}
+    body: {string: '{"session":"34a45d1d93fd8d14fe0b93b5e49011612e6b19a395afd03a3f6d311073f18606","user":{"lock_version":1172,"username":"admin","name":"Administrator","is_system_user":true,"create_time":"2015-06-11T17:04:21Z","system_mtime":"2016-02-15T23:29:50Z","user_mtime":"2016-02-15T23:29:50Z","jsonmodel_type":"user","groups":[],"is_admin":true,"uri":"/users/1","agent_record":{"ref":"/agents/people/1"},"permissions":{"/repositories/1":["update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record","administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed"],"_archivesspace":["administer_system","become_user","cancel_importer_job","create_repository","delete_archival_record","delete_classification_record","delete_event_record","delete_repository","import_records","index_system","manage_agent_record","manage_repository","manage_subject_record","manage_users","manage_vocabulary_record","mediate_edits","merge_agents_and_subjects","merge_archival_record","suppress_archival_record","system_config","transfer_archival_record","transfer_repository","update_accession_record","update_classification_record","update_digital_object_record","update_event_record","update_resource_record","view_all_records","view_repository","view_suppressed","update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","merge_subject_record","merge_agent_record"]}}}
 
 '}
     headers:
-      cache-control: ['private, must-revalidate, max-age=0']
-      content-length: ['2206']
-      content-type: [application/json]
-      date: ['Tue, 27 Oct 2015 23:39:30 GMT']
-      server: [Jetty(8.1.5.v20120716)]
-      x-content-type-options: [nosniff]
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['2207']
+      Content-Type: [application/json]
+      Date: ['Mon, 15 Feb 2016 23:29:50 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
     status: {code: 200, message: OK}
 - request:
     body: null
@@ -28,23 +29,24 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-63-generic]
-      X-ArchivesSpace-Session: [!!python/unicode f8fb69f71f8e709c3286d60f9597acc256bedb44966d6465e3130f9e398fdc17]
+      User-Agent: [python-requests/2.9.1]
+      X-ArchivesSpace-Session: [34a45d1d93fd8d14fe0b93b5e49011612e6b19a395afd03a3f6d311073f18606]
     method: GET
-    uri: http://localhost:8089/repositories/2/search?q=primary_type%3Aresource+AND+title%3ATest+fonds&page=1&page_size=30
+    uri: http://localhost:8089/repositories/2/search?page=1&q=primary_type%3Aresource+AND+title%3ATest%5C%5C+fonds&page_size=30
   response:
-    body: {string: !!python/unicode '{"first_page":1,"last_page":1,"this_page":1,"offset_first":1,"offset_last":1,"total_hits":1,"results":[{"id":"/repositories/2/resources/1","title":"Test
-        fonds","primary_type":"resource","types":["resource"],"json":"{\"lock_version\":1,\"title\":\"Test
-        fonds\",\"publish\":false,\"restrictions\":false,\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-06-11T17:08:42Z\",\"system_mtime\":\"2015-08-12T20:24:17Z\",\"user_mtime\":\"2015-08-12T20:24:17Z\",\"suppressed\":false,\"id_0\":\"F1\",\"language\":\"eng\",\"level\":\"fonds\",\"jsonmodel_type\":\"resource\",\"external_ids\":[],\"subjects\":[],\"linked_events\":[],\"extents\":[{\"lock_version\":0,\"number\":\"1\",\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-08-12T20:24:18Z\",\"system_mtime\":\"2015-08-12T20:24:18Z\",\"user_mtime\":\"2015-08-12T20:24:18Z\",\"portion\":\"whole\",\"extent_type\":\"cassettes\",\"jsonmodel_type\":\"extent\"}],\"dates\":[{\"lock_version\":0,\"begin\":\"2015-01-01\",\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-08-12T20:24:18Z\",\"system_mtime\":\"2015-08-12T20:24:18Z\",\"user_mtime\":\"2015-08-12T20:24:18Z\",\"date_type\":\"single\",\"label\":\"creation\",\"jsonmodel_type\":\"date\"}],\"external_documents\":[],\"rights_statements\":[],\"linked_agents\":[],\"instances\":[],\"deaccessions\":[],\"related_accessions\":[{\"ref\":\"/repositories/2/accessions/1\"}],\"notes\":[],\"uri\":\"/repositories/2/resources/1\",\"repository\":{\"ref\":\"/repositories/2\"},\"tree\":{\"ref\":\"/repositories/2/resources/1/tree\"}}","suppressed":false,"publish":false,"system_generated":false,"repository":"/repositories/2","created_by":"admin","last_modified_by":"admin","user_mtime":"2015-08-12T20:24:17Z","system_mtime":"2015-08-12T20:24:17Z","create_time":"2015-06-11T17:08:42Z","level":"fonds","identifier":"F1","language":"eng","restrictions":"false","four_part_id":"F1","uri":"/repositories/2/resources/1","jsonmodel_type":"resource"}],"facets":{"facet_queries":{},"facet_fields":{},"facet_dates":{},"facet_ranges":{}}}
+    body: {string: '{"first_page":1,"last_page":1,"this_page":1,"offset_first":1,"offset_last":1,"total_hits":1,"results":[{"id":"/repositories/2/resources/1","title":"Test
+        fonds","primary_type":"resource","types":["resource"],"json":"{\"lock_version\":11,\"title\":\"Test
+        fonds\",\"publish\":false,\"restrictions\":false,\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-06-11T17:08:42Z\",\"system_mtime\":\"2015-12-03T00:03:41Z\",\"user_mtime\":\"2015-12-03T00:03:41Z\",\"suppressed\":false,\"id_0\":\"F1\",\"language\":\"eng\",\"level\":\"fonds\",\"jsonmodel_type\":\"resource\",\"external_ids\":[],\"subjects\":[],\"linked_events\":[],\"extents\":[{\"lock_version\":0,\"number\":\"1\",\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-12-03T00:03:42Z\",\"system_mtime\":\"2015-12-03T00:03:42Z\",\"user_mtime\":\"2015-12-03T00:03:42Z\",\"portion\":\"whole\",\"extent_type\":\"cassettes\",\"jsonmodel_type\":\"extent\"}],\"dates\":[{\"lock_version\":0,\"begin\":\"2015-01-01\",\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2015-12-03T00:03:42Z\",\"system_mtime\":\"2015-12-03T00:03:42Z\",\"user_mtime\":\"2015-12-03T00:03:42Z\",\"date_type\":\"single\",\"label\":\"creation\",\"jsonmodel_type\":\"date\"}],\"external_documents\":[],\"rights_statements\":[],\"linked_agents\":[],\"instances\":[],\"deaccessions\":[],\"related_accessions\":[{\"ref\":\"/repositories/2/accessions/1\"}],\"notes\":[{\"content\":[\"Singlepart
+        note\"],\"type\":\"physdesc\",\"jsonmodel_type\":\"note_singlepart\",\"persistent_id\":\"cdc013c483de98b8a1762302faf8fd32\",\"publish\":true}],\"uri\":\"/repositories/2/resources/1\",\"repository\":{\"ref\":\"/repositories/2\"},\"tree\":{\"ref\":\"/repositories/2/resources/1/tree\"}}","suppressed":false,"publish":false,"system_generated":false,"repository":"/repositories/2","created_by":"admin","last_modified_by":"admin","user_mtime":"2015-12-03T00:03:41Z","system_mtime":"2015-12-03T00:03:41Z","create_time":"2015-06-11T17:08:42Z","level":"fonds","identifier":"F1","language":"eng","restrictions":"false","four_part_id":"F1","uri":"/repositories/2/resources/1","jsonmodel_type":"resource"}],"facets":{"facet_queries":{},"facet_fields":{},"facet_dates":{},"facet_ranges":{}}}
 
 '}
     headers:
-      cache-control: ['private, must-revalidate, max-age=0']
-      content-length: ['2100']
-      content-type: [application/json]
-      date: ['Tue, 27 Oct 2015 23:39:30 GMT']
-      server: [Jetty(8.1.5.v20120716)]
-      x-content-type-options: [nosniff]
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['2269']
+      Content-Type: [application/json]
+      Date: ['Mon, 15 Feb 2016 23:29:50 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
     status: {code: 200, message: OK}
 - request:
     body: null
@@ -52,26 +54,41 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-63-generic]
-      X-ArchivesSpace-Session: [!!python/unicode f8fb69f71f8e709c3286d60f9597acc256bedb44966d6465e3130f9e398fdc17]
+      User-Agent: [python-requests/2.9.1]
+      X-ArchivesSpace-Session: [34a45d1d93fd8d14fe0b93b5e49011612e6b19a395afd03a3f6d311073f18606]
     method: GET
     uri: http://localhost:8089/repositories/2/resources/1/tree?page=1
   response:
-    body: {string: !!python/unicode '{"title":"Test fonds","id":1,"node_type":"resource","publish":false,"suppressed":false,"children":[{"title":"Test
-        series","id":1,"record_uri":"/repositories/2/archival_objects/1","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":true,"children":[{"title":"Test
-        subseries","id":3,"record_uri":"/repositories/2/archival_objects/3","publish":false,"suppressed":false,"node_type":"archival_object","level":"subseries","has_children":true,"children":[{"title":"Test
+    body: {string: '{"title":"Test fonds","id":1,"node_type":"resource","publish":false,"suppressed":false,"children":[{"title":"Test
+        series, 1950 - 1972","id":1,"record_uri":"/repositories/2/archival_objects/1","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":true,"children":[{"title":"Test
+        edited subseries w/ empty note, November, 2014 to November, 2015","id":3,"record_uri":"/repositories/2/archival_objects/3","publish":false,"suppressed":false,"node_type":"archival_object","level":"subseries","has_children":true,"children":[{"title":"Test
         file","id":4,"record_uri":"/repositories/2/archival_objects/4","publish":false,"suppressed":false,"node_type":"archival_object","level":"file","has_children":false,"children":[],"instance_types":[],"containers":[]}],"instance_types":[],"containers":[]},{"title":"New
-        new new child","id":10,"record_uri":"/repositories/2/archival_objects/10","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":false,"children":[],"instance_types":[],"containers":[]}],"instance_types":[],"containers":[]},{"title":"Test
-        series 2","id":2,"record_uri":"/repositories/2/archival_objects/2","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":false,"children":[],"instance_types":[],"containers":[]}],"record_uri":"/repositories/2/resources/1","level":"fonds","jsonmodel_type":"resource_tree","instance_types":[],"containers":[]}
+        new new edited child","id":10,"record_uri":"/repositories/2/archival_objects/10","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":false,"children":[],"instance_types":[],"containers":[]}],"instance_types":[],"containers":[]},{"title":"Test
+        series 2","id":2,"record_uri":"/repositories/2/archival_objects/2","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        new child","id":13,"record_uri":"/repositories/2/archival_objects/13","publish":false,"suppressed":false,"node_type":"archival_object","level":"series","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        new child 2","id":14,"record_uri":"/repositories/2/archival_objects/14","publish":false,"suppressed":false,"node_type":"archival_object","level":"item","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        new child 3","id":16,"record_uri":"/repositories/2/archival_objects/16","publish":false,"suppressed":false,"node_type":"archival_object","level":"class","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"New
+        child with note","id":17,"record_uri":"/repositories/2/archival_objects/17","publish":false,"suppressed":false,"node_type":"archival_object","level":"class","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"New
+        child final","id":18,"record_uri":"/repositories/2/archival_objects/18","publish":false,"suppressed":false,"node_type":"archival_object","level":null,"has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Child
+        with no note","id":19,"record_uri":"/repositories/2/archival_objects/19","publish":false,"suppressed":false,"node_type":"archival_object","level":"fonds","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Child
+        with no note","id":20,"record_uri":"/repositories/2/archival_objects/20","publish":false,"suppressed":false,"node_type":"archival_object","level":"fonds","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        child","id":26,"record_uri":"/repositories/2/archival_objects/26","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        child","id":27,"record_uri":"/repositories/2/archival_objects/27","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        child","id":28,"record_uri":"/repositories/2/archival_objects/28","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        child","id":29,"record_uri":"/repositories/2/archival_objects/29","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Record
+        with two notes","id":32,"record_uri":"/repositories/2/archival_objects/32","publish":false,"suppressed":false,"node_type":"archival_object","level":null,"has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Second
+        child with two notes","id":33,"record_uri":"/repositories/2/archival_objects/33","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Third
+        record with two notes","id":34,"record_uri":"/repositories/2/archival_objects/34","publish":false,"suppressed":false,"node_type":"archival_object","level":null,"has_children":false,"children":[],"instance_types":[],"containers":[]},{"title":"Test
+        child","id":35,"record_uri":"/repositories/2/archival_objects/35","publish":false,"suppressed":false,"node_type":"archival_object","level":"recordgrp","has_children":false,"children":[],"instance_types":[],"containers":[]}],"record_uri":"/repositories/2/resources/1","level":"fonds","jsonmodel_type":"resource_tree","instance_types":[],"containers":[]}
 
 '}
     headers:
-      cache-control: ['private, must-revalidate, max-age=0']
-      content-length: ['1407']
-      content-type: [application/json]
-      date: ['Tue, 27 Oct 2015 23:39:30 GMT']
-      server: [Jetty(8.1.5.v20120716)]
-      x-content-type-options: [nosniff]
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['5098']
+      Content-Type: [application/json]
+      Date: ['Mon, 15 Feb 2016 23:29:50 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
     status: {code: 200, message: OK}
 - request:
     body: null
@@ -79,20 +96,20 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-63-generic]
-      X-ArchivesSpace-Session: [!!python/unicode f8fb69f71f8e709c3286d60f9597acc256bedb44966d6465e3130f9e398fdc17]
+      User-Agent: [python-requests/2.9.1]
+      X-ArchivesSpace-Session: [34a45d1d93fd8d14fe0b93b5e49011612e6b19a395afd03a3f6d311073f18606]
     method: GET
-    uri: http://localhost:8089/repositories/2/search?q=primary_type%3Aresource+AND+title%3ANo+such+fonds&page=1&page_size=30
+    uri: http://localhost:8089/repositories/2/search?page=1&q=primary_type%3Aresource+AND+title%3ANo%5C%5C+such%5C%5C+fonds&page_size=30
   response:
-    body: {string: !!python/unicode '{"first_page":1,"last_page":0,"this_page":1,"offset_first":1,"offset_last":0,"total_hits":0,"results":[],"facets":{"facet_queries":{},"facet_fields":{},"facet_dates":{},"facet_ranges":{}}}
+    body: {string: '{"first_page":1,"last_page":0,"this_page":1,"offset_first":1,"offset_last":0,"total_hits":0,"results":[],"facets":{"facet_queries":{},"facet_fields":{},"facet_dates":{},"facet_ranges":{}}}
 
 '}
     headers:
-      cache-control: ['private, must-revalidate, max-age=0']
-      content-length: ['189']
-      content-type: [application/json]
-      date: ['Tue, 27 Oct 2015 23:39:30 GMT']
-      server: [Jetty(8.1.5.v20120716)]
-      x-content-type-options: [nosniff]
+      Cache-Control: ['private, must-revalidate, max-age=0']
+      Content-Length: ['189']
+      Content-Type: [application/json]
+      Date: ['Mon, 15 Feb 2016 23:29:50 GMT']
+      Server: [Jetty(8.1.5.v20120716)]
+      X-Content-Type-Options: [nosniff]
     status: {code: 200, message: OK}
 version: 1

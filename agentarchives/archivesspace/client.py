@@ -137,6 +137,20 @@ class ArchivesSpaceClient(object):
 
         return notes
 
+    def _escape_solr_query(self, query, field='title'):
+        """
+        Escapes special characters in Solr queries.
+        Note that this omits * - this is intentionally permitted in user queries.
+        The list of special characters is located at http://lucene.apache.org/core/4_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Escaping_Special_Characters
+        """
+        # Different rules for "title" and "identifier" fields :/
+        if field == 'title':
+            replacement = r'\\\\\1'
+        else:
+            replacement = r'\\\1'
+            
+        return re.sub(r'([\'" +\-!\(\)\{\}\[\]^"~?:\\/]|&&|\|\|)', replacement, query)
+
     def resource_type(self, resource_id):
         """
         Given an ID, determines whether a given resource is a resource or a resource_component.
@@ -469,9 +483,11 @@ class ArchivesSpaceClient(object):
         }
 
         if search_pattern != '':
+            search_pattern = self._escape_solr_query(search_pattern, field='title')
             params['q'] = params['q'] + ' AND title:{}'.format(search_pattern)
 
         if identifier != '':
+            identifier = self._escape_solr_query(identifier, field='identifier')
             params['q'] = params['q'] + ' AND identifier:{}'.format(identifier)
 
         response = self._get(self.repository + '/search', params=params)
@@ -544,12 +560,15 @@ class ArchivesSpaceClient(object):
         }
 
         if search_pattern != '':
+            search_pattern = self._escape_solr_query(search_pattern, field='title')
             params['q'] = params['q'] + ' AND title:{}'.format(search_pattern)
 
         if identifier != '':
+            identifier = self._escape_solr_query(identifier, field='identifier')
             params['q'] = params['q'] + ' AND identifier:{}'.format(identifier)
 
         if accession != '':
+            accession = self._escape_solr_query(accession, field='identifier')
             params['q'] = params['q'] + ' AND accession:{}'.format(accession)
 
         if sort_by is not None:

@@ -45,6 +45,15 @@ def test_listing_collections_search():
     assert len(no_results) == 0
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections_search_spaces.yaml'))
+def test_listing_collections_search_spaces():
+    client = ArchivesSpaceClient(**AUTH)
+    collections = client.find_collections(identifier="2015044 Aa Ac")
+    assert len(collections) == 1
+    assert collections[0]['title'] == 'Resource with spaces in the identifier'
+    assert collections[0]['levelOfDescription'] == 'collection'
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections_sort.yaml'))
 def test_listing_collections_sort():
     client = ArchivesSpaceClient(**AUTH)
@@ -393,3 +402,14 @@ def test_contentless_notes():
     collections = client.find_collections()
     assert collections[-1]['notes'][0]['type'] == 'bioghist'
     assert collections[-1]['notes'][0]['content'] == ''
+
+
+def test_escaping_solr_queries():
+    client = ArchivesSpaceClient(**AUTH)
+    query = '"quotes"'
+    # Test escaping single characters
+    assert client._escape_solr_query(query, field='identifier') == r'\"quotes\"'
+    assert client._escape_solr_query(query, field='title') == r'\\"quotes\\"'
+    # And double characters, which require only one set of escape tokens
+    assert client._escape_solr_query('&&test', field='identifier') == r'\&&test'
+    assert client._escape_solr_query('test') == 'test'
