@@ -514,7 +514,7 @@ class ArchivesSpaceClient(object):
 
         return self._get(self.repository + '/search', params=params).json()['total_hits']
 
-    def find_collections(self, search_pattern='', identifier='', accession='', fetched=0, page=1, page_size=30, sort_by=None):
+    def find_collections(self, search_pattern='', identifier='', fetched=0, page=1, page_size=30, sort_by=None):
         """
         Fetches a list of all resource IDs for every resource in the database.
 
@@ -566,10 +566,6 @@ class ArchivesSpaceClient(object):
         if identifier != '':
             identifier = self._escape_solr_query(identifier, field='identifier')
             params['q'] = params['q'] + ' AND identifier:{}'.format(identifier)
-
-        if accession != '':
-            accession = self._escape_solr_query(accession, field='identifier')
-            params['q'] = params['q'] + ' AND accession:{}'.format(accession)
 
         if sort_by is not None:
             params['sort'] = 'title_sort ' + sort_by
