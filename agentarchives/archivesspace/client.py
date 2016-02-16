@@ -514,7 +514,7 @@ class ArchivesSpaceClient(object):
 
         return self._get(self.repository + '/search', params=params).json()['total_hits']
 
-    def find_collections(self, search_pattern='', identifier='', accession='', fetched=0, page=1, page_size=30, sort_by=None):
+    def find_collections(self, search_pattern='', identifier='', fetched=0, page=1, page_size=30, sort_by=None):
         """
         Fetches a list of all resource IDs for every resource in the database.
 
@@ -525,9 +525,6 @@ class ArchivesSpaceClient(object):
         :param string identifier: Restrict records to only those with this identifier.
             This refers to the human-assigned record identifier, not the automatically generated internal ID.
             This value can contain wildcards.
-        :param string accession: Restrict records to only those associated with this accession.
-            This should be provided using ArchivesSpace's internal format, for instance /repositories/2/accessions/1; it does not refer to human-assigned accession identifiers.
-            Use ArchivesSpaceClient.find_collections_by_accession to locate records via a human-assigned accession identifier.
 
         :return: A list containing every matched resource's ID.
         :rtype: list
@@ -567,50 +564,12 @@ class ArchivesSpaceClient(object):
             identifier = self._escape_solr_query(identifier, field='identifier')
             params['q'] = params['q'] + ' AND identifier:{}'.format(identifier)
 
-        if accession != '':
-            accession = self._escape_solr_query(accession, field='identifier')
-            params['q'] = params['q'] + ' AND accession:{}'.format(accession)
-
         if sort_by is not None:
             params['sort'] = 'title_sort ' + sort_by
 
         response = self._get(self.repository + '/search', params=params)
         hits = response.json()
         return [format_record(json.loads(r['json'])) for r in hits['results']]
-
-    def find_collections_by_accession(self, accession, search_pattern='', identifier='', page=1, page_size=30, sort_by=None):
-        """
-        Return all resources associated with an accession matching the provided accession number.
-
-        Other parameters match ArchivesSpaceClient.find_collections, and full documentation can be found there.
-
-        :param string accession: The accession number, as entered into ArchivesSpace.
-        :param string search_pattern: Limits resources to only those whose title matches this string.
-        :param string identifier: Limits resources to only those whose identifiers match this string.
-
-        :rtype: list
-        """
-        collections = []
-
-        params = {
-            'page': page,
-            'page_size': page_size,
-            'q': 'identifier:{}'.format(accession),
-            'type[]': 'accession',
-        }
-        response = self._get(self.repository + '/search', params=params)
-        hits = response.json()
-
-        for record in hits['results']:
-            accession_identifier = record['uri']
-            collections.extend(self.find_collections(accession=accession_identifier,
-                                                     search_pattern=search_pattern,
-                                                     identifier=identifier,
-                                                     page=page,
-                                                     page_size=page_size,
-                                                     sort_by=sort_by))
-
-        return collections
 
     def find_by_id(self, object_type, field, value):
         """
