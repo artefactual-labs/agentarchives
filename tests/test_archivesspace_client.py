@@ -405,11 +405,15 @@ def test_contentless_notes():
 
 
 def test_escaping_solr_queries():
-    client = ArchivesSpaceClient(**AUTH)
+    # Call this unbound, with None as self, since it doesn't actually use self.
+    # This prevents us from having to instantiate the class to call it.
+    def escape(s, **kwargs):
+        return ArchivesSpaceClient._escape_solr_query(None, s, **kwargs)
+
     query = '"quotes"'
     # Test escaping single characters
-    assert client._escape_solr_query(query, field='identifier') == r'\"quotes\"'
-    assert client._escape_solr_query(query, field='title') == r'\\"quotes\\"'
+    assert escape(query, field='identifier') == r'\"quotes\"'
+    assert escape(query, field='title') == r'\\"quotes\\"'
     # And double characters, which require only one set of escape tokens
-    assert client._escape_solr_query('&&test', field='identifier') == r'\&&test'
-    assert client._escape_solr_query('test') == 'test'
+    assert escape('&&test', field='identifier') == r'\&&test'
+    assert escape('test') == 'test'
