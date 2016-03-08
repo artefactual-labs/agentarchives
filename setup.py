@@ -7,6 +7,6 @@ setup(
     author_email="mdemeo@artefactual.com",
     license="AGPL 3",
     version="0.1",
-    packages=["agentarchives", "agentarchives.archivesspace", "agentarchives.archivists_toolkit"],
+    packages=["agentarchives", "agentarchives.archivesspace", "agentarchives.archivists_toolkit", "agentarchives.atom"],
     install_requires=["requests>=2,<3", "mysqlclient>=1.3,<2"],
 )
