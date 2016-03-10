@@ -311,10 +311,11 @@ class ArchivesSpaceClient(object):
         if not dates:
             try:
                 start_date = record['dates'][0]['begin']
-            except IndexError:
+            except (IndexError, ValueError):
                 return ''
             end_date = record['dates'][0].get('end')
             return self._format_dates(start_date, end_date)
+        return dates
 
     def _fetch_date_expression_from_record(self, record):
         if not record.get('dates'):
