@@ -1,0 +1,31 @@
+interactions:
+- request:
+    body: '{"level_of_description": "subfonds", "notes": [{"content": "This is a test
+      note", "type": "general"}], "parent_slug": "test-fonds", "title": "Another subfonds"}'
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['160']
+      Content-type: [application/json]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
+      X-REST-API-KEY: [68405800c6612599]
+    method: POST
+    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects
+  response:
+    body: {string: !!python/unicode '{"id":465,"slug":"another-subfonds","parent_id":436}'}
+    headers:
+      cache-control: ['no-store, no-cache, must-revalidate, post-check=0, pre-check=0']
+      connection: [Keep-Alive]
+      content-length: ['52']
+      content-type: [application/json; charset=utf-8]
+      date: ['Tue, 29 Mar 2016 21:10:55 GMT']
+      expires: ['Thu, 19 Nov 1981 08:52:00 GMT']
+      keep-alive: ['timeout=5, max=100']
+      pragma: [no-cache]
+      server: [Apache/2.4.7 (Ubuntu)]
+      set-cookie: [symfony=s1pnscpqle5j9jedbvjsd211l7; path=/ica-atom; HttpOnly, symfony=g4u62jqlpjreisv08qe09ustp0;
+          path=/ica-atom; HttpOnly]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 201, message: Created}
+version: 1
