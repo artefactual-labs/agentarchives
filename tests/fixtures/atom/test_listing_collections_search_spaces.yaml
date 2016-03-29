@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
+      X-REST-API-KEY: [68405800c6612599]
+    method: GET
+    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects?skip=0&sq1=2015044%5C+Aa%5C+Ac&sq0=&sf0=_all&sf1=identifier&limit=30&topLod=1
+  response:
+    body: {string: !!python/unicode '{"total":1,"results":[{"reference_code":"2015044
+        Aa Ac","slug":"a-fonds-for-testing","title":"Resource with spaces in the identifier","level_of_description":"Fonds"}]}'}
+    headers:
+      cache-control: ['no-store, no-cache, must-revalidate, post-check=0, pre-check=0']
+      connection: [Keep-Alive]
+      content-length: ['167']
+      content-type: [application/json; charset=utf-8]
+      date: ['Wed, 20 Apr 2016 03:06:12 GMT']
+      expires: ['Thu, 19 Nov 1981 08:52:00 GMT']
+      keep-alive: ['timeout=5, max=100']
+      pragma: [no-cache]
+      server: [Apache/2.4.7 (Ubuntu)]
+      set-cookie: [symfony=erk1m3g6pp744j8vmk3r842me4; path=/ica-atom; HttpOnly]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Cookie: [symfony=erk1m3g6pp744j8vmk3r842me4]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
+      X-REST-API-KEY: [68405800c6612599]
+    method: GET
+    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/a-fonds-for-testing
+  response:
+    body: {string: !!python/unicode '{"reference_code":"2015044 Aa Ac","title":"Resource
+        with spaces in the identifier","publication_status":"Draft","level_of_description":"Fonds"}'}
+    headers:
+      cache-control: ['no-store, no-cache, must-revalidate, post-check=0, pre-check=0']
+      connection: [Keep-Alive]
+      content-length: ['143']
+      content-type: [application/json; charset=utf-8]
+      date: ['Wed, 20 Apr 2016 03:06:12 GMT']
+      expires: ['Thu, 19 Nov 1981 08:52:00 GMT']
+      keep-alive: ['timeout=5, max=99']
+      pragma: [no-cache]
+      server: [Apache/2.4.7 (Ubuntu)]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Cookie: [symfony=erk1m3g6pp744j8vmk3r842me4]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
+      X-REST-API-KEY: [68405800c6612599]
+    method: GET
+    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/a-fonds-for-testing
+  response:
+    body: {string: !!python/unicode '{"title":"Resource with spaces in the identifier","identifier":"2015044
+        Aa Ac","slug":"a-fonds-for-testing","level":"Fonds"}'}
+    headers:
+      cache-control: ['no-store, no-cache, must-revalidate, post-check=0, pre-check=0']
+      connection: [Keep-Alive]
+      content-length: ['124']
+      content-type: [application/json; charset=utf-8]
+      date: ['Wed, 20 Apr 2016 03:06:12 GMT']
+      expires: ['Thu, 19 Nov 1981 08:52:00 GMT']
+      keep-alive: ['timeout=5, max=98']
+      pragma: [no-cache]
+      server: [Apache/2.4.7 (Ubuntu)]
+      x-powered-by: [PHP/5.5.9-1ubuntu4.14]
+    status: {code: 200, message: OK}
+version: 1
