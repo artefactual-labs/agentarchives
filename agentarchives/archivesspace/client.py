@@ -137,7 +137,8 @@ class ArchivesSpaceClient(object):
 
         return notes
 
-    def _escape_solr_query(self, query, field='title'):
+    @staticmethod
+    def _escape_solr_query(query, field='title'):
         """
         Escapes special characters in Solr queries.
         Note that this omits * - this is intentionally permitted in user queries.
