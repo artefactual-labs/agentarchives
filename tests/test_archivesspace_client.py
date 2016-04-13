@@ -405,10 +405,8 @@ def test_contentless_notes():
 
 
 def test_escaping_solr_queries():
-    # Call this unbound, with None as self, since it doesn't actually use self.
-    # This prevents us from having to instantiate the class to call it.
     def escape(s, **kwargs):
-        return ArchivesSpaceClient._escape_solr_query(None, s, **kwargs)
+        return ArchivesSpaceClient._escape_solr_query(s, **kwargs)
 
     query = '"quotes"'
     # Test escaping single characters
