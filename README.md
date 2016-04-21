@@ -6,7 +6,8 @@ Clients to retrieve, add, and modify records from archival management systems
 `pip install git+https://github.com/artefactual-labs/agentarchives.git`
 
 ##Usage
-This library can be used to interact with both [Archivists Toolkit](http://archiviststoolkit.org/) as well as [ArchivesSpace](http://archivesspace.org/)
+This library can be used to interact with [Archivists Toolkit](http://archiviststoolkit.org/),
+[ArchivesSpace](http://archivesspace.org/), and [Access To Memory (AtoM)]().
 
 ### ArchivesSpace
 First, you need to import the module in your Python script:
@@ -111,3 +112,45 @@ will return:
        'last_modified_by':'admin',
        'id_0':'blah’
     }
+
+### Access To Memory (AtoM)
+First, you need to import the module in your Python script:
+
+`from agentarchives import atom
+
+Then, initiate a new client, passing in the URL, REST API access token, password, and port for your AtoM instance:
+
+`client = atom.AtomClient('http://localhost', '68405800c6612599', 80)`
+
+Using your client, call one of the included functions (documented in `client.py`). For example, the following:
+
+    $ resource = client.get_record('test-fonds’)
+    $ print resource
+
+Will return:
+
+    {  
+       'publication_status': 'Draft',
+       'dates': [  
+          {  
+             'end': '2015-01-01',
+             'begin': '2014-01-01',
+             'type': 'Creation'
+          }
+       ],
+       'title': 'Test fonds',
+       'notes':[  
+          {  
+             'content': 'Note content',
+             'type': 'general'
+          }
+       ],
+       'reference_code': 'F2',
+       'level_of_description': 'Fonds'
+    }
+
+Current AtoM client limitations (versus the ArchivesSpace client):
+* Identifier wildcard search not supported
+* Creation of multiple notes not supported
+* Nested digital objects not supported
+* The ability to add/list notes with no content isn't supported
