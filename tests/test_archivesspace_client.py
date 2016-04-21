@@ -2,7 +2,11 @@
 import os
 
 import pytest
+import sys
 import vcr
+
+here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, here)
 
 from agentarchives.archivesspace.client import ArchivesSpaceClient, ArchivesSpaceError, CommunicationError
 
