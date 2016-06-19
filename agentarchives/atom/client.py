@@ -4,9 +4,9 @@ import os
 import re
 import requests
 try:
-    from urlparse import urlparse
+    from urlparse import urlparse, urljoin
 except ImportError:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, urljoin
 
 __all__ = ['AtomError', 'ConnectionError', 'AuthenticationError', 'AtomClient']
 
@@ -27,7 +27,7 @@ class AuthenticationError(AtomError):
 
 class CommunicationError(AtomError):
     def __init__(self, status_code, response):
-        message = "AtoM server responded {}".format(status_code)
+        message = 'AtoM server responded with status code {} (URL: {})'.format(status_code, response.url)
         self.response = response
         super(CommunicationError, self).__init__(message)
 
@@ -46,27 +46,19 @@ class AtomClient(object):
     RESOURCE = 'resource'
     RESOURCE_COMPONENT = 'resource_component'
 
-    def __init__(self, host, api_key, port=80):
-        parsed = urlparse(host)
-        if not parsed.scheme:
-            host = 'http://' + host
-
-        self.host = host + ':' + str(port)
-        self.api_key = api_key
-        self.api_base_url = 'ica-atom/index.php/api'
+    def __init__(self, url, key):
+        self.key = key
+        self.base_url = urljoin(url, 'api/')
 
         # Create session that will send the access token on each request
         self.session = requests.Session()
-        self.session.headers.update({'X-REST-API-KEY': self.api_key})
+        self.session.headers.update({'REST-API-Key': self.key})
 
     def _request(self, method, url, params, expected_response, data=None):
-        if not url.startswith('/'):
-            url = '/' + url
-
         # AtoM's REST API won't parse JSON-encoded body data unless this header's set
         headers = {'Content-type': 'application/json'} if data is not None else None
 
-        response = method(self.host + url, params=params, data=data, headers=headers)
+        response = method(url, params=params, data=data, headers=headers)
         if response.status_code != expected_response:
             LOGGER.error('Response code: %s', response.status_code)
             LOGGER.error('Response body: %s', response.text)
@@ -142,7 +134,7 @@ class AtomClient(object):
         return re.sub(r'([\'" +\-!\(\)\{\}\[\]^"~?:\\/]|&&|\|\|)', replacement, query)
 
     def get_record(self, record_id):
-        record = self._get(self.api_base_url + '/informationobjects/' + record_id).json()
+        record = self._get(urljoin(self.base_url, 'informationobjects/{}'.format(record_id))).json()
         if 'dates' in record:
             for date in record['dates']:
                 self._format_date_from_atom(date)
@@ -249,14 +241,14 @@ class AtomClient(object):
         if not fields_updated:
             raise ValueError('No fields to update specified!')
 
-        self._put(self.api_base_url + '/informationobjects/' + record_id, data=json.dumps(record))
+        self._put(urljoin(self.base_url, 'informationobjects/{}'.format(record_id)), data=json.dumps(record))
 
     def get_levels_of_description(self):
         """
         Returns an array of all levels of description defined in this AtoM instance.
         """
         if not hasattr(self, 'levels_of_description'):
-            self.levels_of_description = [item['name'] for item in self._get(self.api_base_url + '/taxonomies/34').json()]
+            self.levels_of_description = [item['name'] for item in self._get(urljoin(self.base_url, 'taxonomies/34')).json()]
 
         return self.levels_of_description
 
@@ -281,7 +273,7 @@ class AtomClient(object):
 
             return results
 
-        response = self._get(self.api_base_url + '/informationobjects/tree/' + resource_id)
+        response = self._get(urljoin(self.base_url, 'informationobjects/tree/{}'.format(resource_id)))
         tree = response.json()
         return fetch_children(tree['children'])
 
@@ -337,7 +329,7 @@ class AtomClient(object):
 
             return result
 
-        response = self._get(self.api_base_url + '/informationobjects/tree/' + resource_id)
+        response = self._get(urljoin(self.base_url, 'informationobjects/tree/{}'.format(resource_id)))
         tree = response.json()
         return format_record(tree, 1)
 
@@ -481,7 +473,7 @@ class AtomClient(object):
             if sort_by == 'desc':
                 params['reverse'] = True
 
-        return self._get(self.api_base_url + '/informationobjects', params=params)
+        return self._get(urljoin(self.base_url, 'informationobjects'), params=params)
 
     def count_collections(self, search_pattern='', identifier=''):
         response = self._collections_search_request(search_pattern, identifier, 1)
@@ -509,9 +501,10 @@ class AtomClient(object):
             date_expression = self._fetch_date_expression_from_record(record)
 
             # Determine whether descendents exist
-            tree = self._get(self.api_base_url + '/informationobjects/tree/' + record['slug']).json()
+            url = urljoin(self.base_url, 'informationobjects/tree/{}'.format(record['slug']))
+            tree = self._get(url).json()
             if 'children' in tree:
-                has_children = len(self._get(self.api_base_url + '/informationobjects/tree/' + record['slug']).json()['children']) > 0
+                has_children = len(self._get(url).json()['children']) > 0
             else:
                 has_children = False
 
@@ -580,8 +573,7 @@ class AtomClient(object):
 
         new_object['media_type'] = object_type
 
-        #raise NotImplementedError("add_digital_object not yet implemented in AtoM client")
-        new_object['slug'] = self._post(self.api_base_url + '/digitalobjects', data=json.dumps(new_object), expected_response=201).json()['slug']
+        new_object['slug'] = self._post(urljoin(self.base_url, 'digitalobjects'), data=json.dumps(new_object), expected_response=201).json()['slug']
 
         return new_object
 
@@ -638,11 +630,11 @@ class AtomClient(object):
             }
             new_object['notes'].append(new_note)
 
-        return self._post(self.api_base_url + '/informationobjects', data=json.dumps(new_object), expected_response=201).json()['slug']
+        return self._post(urljoin(self.base_url, 'informationobjects'), data=json.dumps(new_object), expected_response=201).json()['slug']
 
     def delete_record(self, record_id):
         """
         Delete a record with record_id.
         """
-        self._delete(self.api_base_url + '/informationobjects/' + record_id, expected_response=204)
+        self._delete(urljoin(self.base_url, 'informationobjects/{}'.format(record_id)), expected_response=204)
         return {'status': 'Deleted'}
