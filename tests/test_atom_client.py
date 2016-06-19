@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import os
+
 import pytest
 import sys
 import vcr
@@ -11,8 +12,8 @@ from agentarchives.atom.client  import AtomClient, AtomError, CommunicationError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {
-    'host': '127.0.0.1',
-    'api_key': '68405800c6612599'
+    'url': 'http://127.0.0.1/index.php',
+    'key': '68405800c6612599'
 }
 
 
@@ -44,7 +45,6 @@ def test_collection_list():
 def test_rendering_record_containing_a_note():
     client = AtomClient(**AUTH)
     collections = client.find_collections()
-    print str(collections)
     assert len(collections) == 2
     assert collections[0]['notes'][0]['content'] == 'Note content'
 
@@ -53,7 +53,6 @@ def test_rendering_record_containing_a_note():
 def test_find_collections_search():
     client = AtomClient(**AUTH)
     collections = client.find_collections(search_pattern='Test fonds')
-    print str(collections)
     assert len(collections) == 1
     assert collections[0]['title'] == 'Test fonds'
     assert collections[0]['type'] == 'resource'
@@ -109,7 +108,6 @@ def test_find_component_parent_with_non_top_level_parent():
 def test_find_resource_children():
     client = AtomClient(**AUTH)
     data = client.get_resource_component_and_children('test-fonds')
-    print str(data)
 
     assert type(data) == dict
     assert len(data['children']) == 1
@@ -163,7 +161,6 @@ def test_find_collection_ids_search():
 def test_count_collection_ids():
     client = AtomClient(**AUTH)
     ids = client.count_collections()
-    print str(ids)
     assert ids == 2
 
 
@@ -233,7 +230,6 @@ def test_delete_record_resource():
     slug = 'another-subfonds'
     assert client.get_record(slug)
     r = client.delete_record(slug)
-    print str(r)
     assert r['status'] == 'Deleted'
     with pytest.raises(CommunicationError):
         client.get_record(slug)
@@ -243,7 +239,6 @@ def test_delete_record_resource():
 def test_edit_archival_object():
     client = AtomClient(**AUTH)
     original = client.get_record('second-subfonds')
-    print str(original)
     assert original['title'] == 'Second subfonds'
     assert original['dates'][0]['end'] == '2015-01-01'
     assert not original['notes']
