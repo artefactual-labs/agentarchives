@@ -11,7 +11,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: POST
-    uri: http://127.0.0.1/ica-atom/index.php/api/digitalobjects
+    uri: http://127.0.0.1/api/digitalobjects
   response:
     body: {string: !!python/unicode '{"id":478,"slug":"kitty-jpg"}'}
     headers:
@@ -24,8 +24,8 @@ interactions:
       keep-alive: ['timeout=5, max=100']
       pragma: [no-cache]
       server: [Apache/2.4.7 (Ubuntu)]
-      set-cookie: [symfony=eoto6ut2nkbejvarp4k3iknkm6; path=/ica-atom; HttpOnly, symfony=g5brdvdhv60ucsa4m9umbq1ou2;
-          path=/ica-atom; HttpOnly]
+      set-cookie: [symfony=eoto6ut2nkbejvarp4k3iknkm6; path=/; HttpOnly, symfony=g5brdvdhv60ucsa4m9umbq1ou2;
+          path=/; HttpOnly]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 201, message: Created}
 version: 1

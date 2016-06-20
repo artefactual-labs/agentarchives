@@ -8,7 +8,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/taxonomies/34
+    uri: http://127.0.0.1/api/taxonomies/34
   response:
     body: {string: !!python/unicode '[{"name":"Collection"},{"name":"File"},{"name":"Fonds"},{"name":"Item"},{"name":"Part"},{"name":"Series"},{"name":"Subfonds"},{"name":"Subseries"}]'}
     headers:
@@ -21,7 +21,7 @@ interactions:
       keep-alive: ['timeout=5, max=100']
       pragma: [no-cache]
       server: [Apache/2.4.7 (Ubuntu)]
-      set-cookie: [symfony=su6c9atbn59n8fancsj1g6ubg4; path=/ica-atom; HttpOnly]
+      set-cookie: [symfony=su6c9atbn59n8fancsj1g6ubg4; path=/; HttpOnly]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 version: 1
