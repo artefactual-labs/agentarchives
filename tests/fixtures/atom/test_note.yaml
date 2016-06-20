@@ -8,7 +8,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects?skip=0&sq0=&topLod=1&limit=30&sf0=_all
+    uri: http://127.0.0.1/api/informationobjects?skip=0&sq0=&topLod=1&limit=30&sf0=_all
   response:
     body: {string: !!python/unicode '{"total":2,"results":[{"reference_code":"testfonds","slug":"test-fonds","title":"Test
         fonds","level_of_description":"Fonds"},{"reference_code":"toplevelfonds","slug":"top-level-fonds","title":"Top
@@ -23,7 +23,7 @@ interactions:
       keep-alive: ['timeout=5, max=100']
       pragma: [no-cache]
       server: [Apache/2.4.7 (Ubuntu)]
-      set-cookie: [symfony=86j5o8pk4n699m5eiv73a8d8n3; path=/ica-atom; HttpOnly]
+      set-cookie: [symfony=86j5o8pk4n699m5eiv73a8d8n3; path=/; HttpOnly]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
@@ -36,7 +36,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/test-fonds
+    uri: http://127.0.0.1/api/informationobjects/test-fonds
   response:
     body: {string: !!python/unicode '{"reference_code":"testfonds","title":"Test fonds","publication_status":"Draft","level_of_description":"Fonds","dates":[{"start_date":"2014-01-01","end_date":"2015-01-01","type":"Creation"}],"notes":["Note
         content"]}'}
@@ -62,7 +62,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/test-fonds
+    uri: http://127.0.0.1/api/informationobjects/tree/test-fonds
   response:
     body: {string: !!python/unicode '{"title":"Test fonds","identifier":"testfonds","slug":"test-fonds","level":"Fonds","children":[{"title":"Test
         subfonds","identifier":"testsubfonds","slug":"test-subfonds","level":"Subfonds","children":[{"title":"Test
@@ -91,7 +91,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/test-fonds
+    uri: http://127.0.0.1/api/informationobjects/tree/test-fonds
   response:
     body: {string: !!python/unicode '{"title":"Test fonds","identifier":"testfonds","slug":"test-fonds","level":"Fonds","children":[{"title":"Test
         subfonds","identifier":"testsubfonds","slug":"test-subfonds","level":"Subfonds","children":[{"title":"Test
@@ -120,7 +120,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/top-level-fonds
+    uri: http://127.0.0.1/api/informationobjects/top-level-fonds
   response:
     body: {string: !!python/unicode '{"reference_code":"toplevelfonds","title":"Top
         Fonds","publication_status":"Published"}'}
@@ -146,7 +146,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/top-level-fonds
+    uri: http://127.0.0.1/api/informationobjects/tree/top-level-fonds
   response:
     body: {string: !!python/unicode '{"title":"Top Fonds","identifier":"toplevelfonds","slug":"top-level-fonds","children":[{"title":"Dawg
         Child","identifier":"dogchild","slug":"child-of-top-level","level":"Subfonds","children":[{"title":"Dawg
@@ -173,7 +173,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/top-level-fonds
+    uri: http://127.0.0.1/api/informationobjects/tree/top-level-fonds
   response:
     body: {string: !!python/unicode '{"title":"Top Fonds","identifier":"toplevelfonds","slug":"top-level-fonds","children":[{"title":"Dawg
         Child","identifier":"dogchild","slug":"child-of-top-level","level":"Subfonds","children":[{"title":"Dawg

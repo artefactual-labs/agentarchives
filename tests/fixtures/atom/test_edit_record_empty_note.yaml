@@ -8,7 +8,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/second-subfonds
+    uri: http://127.0.0.1/api/informationobjects/second-subfonds
   response:
     body: {string: !!python/unicode '{"parent":"test-fonds","title":"Test edited subseries
         w\/ empty note","publication_status":"Published","level_of_description":"Subfonds","dates":[{"date":"November,
@@ -24,7 +24,7 @@ interactions:
       keep-alive: ['timeout=5, max=100']
       pragma: [no-cache]
       server: [Apache/2.4.7 (Ubuntu)]
-      set-cookie: [symfony=vhhfjsuddobcl7vcmodg0p9cc5; path=/ica-atom; HttpOnly]
+      set-cookie: [symfony=vhhfjsuddobcl7vcmodg0p9cc5; path=/; HttpOnly]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
@@ -37,7 +37,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/second-subfonds
+    uri: http://127.0.0.1/api/informationobjects/second-subfonds
   response:
     body: {string: !!python/unicode '{"parent":"test-fonds","title":"Test edited subseries
         w\/ empty note","publication_status":"Published","level_of_description":"Subfonds","dates":[{"date":"November,
@@ -70,7 +70,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: PUT
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/second-subfonds
+    uri: http://127.0.0.1/api/informationobjects/second-subfonds
   response:
     body: {string: !!python/unicode '{"id":463,"parent_id":436}'}
     headers:
@@ -83,7 +83,7 @@ interactions:
       keep-alive: ['timeout=5, max=98']
       pragma: [no-cache]
       server: [Apache/2.4.7 (Ubuntu)]
-      set-cookie: [symfony=j2sqetsq0ki852pv58e7sgn5k0; path=/ica-atom; HttpOnly]
+      set-cookie: [symfony=j2sqetsq0ki852pv58e7sgn5k0; path=/; HttpOnly]
       x-powered-by: [PHP/5.5.9-1ubuntu4.14]
     status: {code: 200, message: OK}
 - request:
@@ -96,7 +96,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/second-subfonds
+    uri: http://127.0.0.1/api/informationobjects/second-subfonds
   response:
     body: {string: !!python/unicode '{"parent":"test-fonds","title":"Test edited subseries
         w\/ empty note","publication_status":"Published","level_of_description":"Subfonds","dates":[{"date":"November,

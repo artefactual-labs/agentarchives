@@ -8,7 +8,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/tree/test-fonds
+    uri: http://127.0.0.1/api/informationobjects/tree/test-fonds
   response:
     body: {string: !!python/unicode '{"title":"Test fonds","identifier":"testfonds","slug":"test-fonds","level":"Fonds","children":[{"title":"Test
         subfonds","identifier":"testsubfonds","slug":"test-subfonds","level":"Subfonds","children":[{"title":"Test

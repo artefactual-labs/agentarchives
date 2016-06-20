@@ -8,7 +8,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/another-subfonds
+    uri: http://127.0.0.1/api/informationobjects/another-subfonds
   response:
     body: {string: !!python/unicode '{"parent":"test-fonds","title":"Another subfonds","publication_status":"Published","level_of_description":"Subfonds","notes":["This
         is a test note"]}'}
@@ -36,7 +36,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: DELETE
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/another-subfonds
+    uri: http://127.0.0.1/api/informationobjects/another-subfonds
   response:
     body: {string: !!python/unicode ''}
     headers:
@@ -62,7 +62,7 @@ interactions:
       User-Agent: [python-requests/2.7.0 CPython/2.7.6 Linux/3.13.0-79-generic]
       X-REST-API-KEY: [68405800c6612599]
     method: GET
-    uri: http://127.0.0.1/ica-atom/index.php/api/informationobjects/another-subfonds
+    uri: http://127.0.0.1/api/informationobjects/another-subfonds
   response:
     body: {string: !!python/unicode ''}
     headers:
