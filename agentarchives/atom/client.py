@@ -1,12 +1,11 @@
 import json
 import logging
-import os
 import re
 import requests
 try:
-    from urlparse import urlparse, urljoin
+    from urlparse import urljoin
 except ImportError:
-    from urllib.parse import urlparse, urljoin
+    from urllib.parse import urljoin
 
 __all__ = ['AtomError', 'ConnectionError', 'AuthenticationError', 'AtomClient']
 
@@ -545,12 +544,10 @@ class AtomClient(object):
 
         return resources_augmented
 
-    def add_digital_object(self, information_object_slug, identifier=None, title=None, uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None, inherit_dates=False):
+    def add_digital_object(self, information_object_slug, identifier=None, title=None, uri=None, location_of_originals=None, object_type=None, xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None, format_registry_key=None, format_registry_name=None, file_uuid=None, aip_uuid=None, inherit_dates=False, usage=None):
         """ Creates a new digital object. """
 
-        new_object = {}
-
-        new_object['information_object_slug'] = information_object_slug
+        new_object = {'information_object_slug': information_object_slug}
 
         if title is not None:
             new_object['name'] = title
@@ -561,7 +558,25 @@ class AtomClient(object):
         if size is not None:
             new_object['byte_size'] = size
 
-        new_object['media_type'] = object_type
+        if object_type is not None:
+            new_object['media_type'] = object_type
+
+        if usage is not None:
+            new_object['usage'] = usage
+
+        if file_uuid is not None:
+            new_object['file_uuid'] = file_uuid
+        if aip_uuid is not None:
+            new_object['aip_uuid'] = aip_uuid
+
+        if format_name is not None:
+            new_object['format_name'] = format_name
+        if format_version is not None:
+            new_object['format_version'] = format_version
+        if format_registry_key is not None:
+            new_object['format_registry_key'] = format_registry_key
+        if format_registry_name is not None:
+            new_object['format_registry_name'] = format_registry_name
 
         new_object['slug'] = self._post(urljoin(self.base_url, 'digitalobjects'), data=json.dumps(new_object), expected_response=201).json()['slug']
 
@@ -589,7 +604,6 @@ class AtomClient(object):
 
         if parent_slug is not None:
             new_object['parent_slug'] = parent_slug
-
 
         # Optionally add date specification
         new_date = {}
