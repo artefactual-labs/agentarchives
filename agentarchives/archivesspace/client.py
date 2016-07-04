@@ -8,6 +8,8 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
+from .. import DEFAULT_TIMEOUT
+
 __all__ = ['ArchivesSpaceError', 'ConnectionError', 'AuthenticationError', 'ArchivesSpaceClient']
 
 LOGGER = logging.getLogger(__name__)
@@ -46,11 +48,12 @@ class ArchivesSpaceClient(object):
     RESOURCE = 'resource'
     RESOURCE_COMPONENT = 'resource_component'
 
-    def __init__(self, host, user, passwd, port=8089, repository=2):
+    def __init__(self, host, user, passwd, port=8089, repository=2, timeout=DEFAULT_TIMEOUT):
         parsed = urlparse(host)
         if not parsed.scheme:
             host = 'http://' + host
 
+        self.timeout = timeout
         self.host = host + ':' + str(port)
         self.user = user
         self.passwd = passwd
@@ -59,8 +62,7 @@ class ArchivesSpaceClient(object):
 
     def _login(self):
         try:
-            response = requests.post(self.host + '/users/' + self.user + '/login',
-                                     data={'password': self.passwd, 'expiring': False})
+            response = requests.post(self.host + '/users/' + self.user + '/login', data={'password': self.passwd, 'expiring': False}, timeout=self.timeout)
         except requests.ConnectionError as e:
             raise ConnectionError("Unable to connect to ArchivesSpace server: " + str(e))
 

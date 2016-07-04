@@ -7,6 +7,8 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
+from .. import DEFAULT_TIMEOUT
+
 __all__ = ['AtomError', 'ConnectionError', 'AuthenticationError', 'AtomClient']
 
 LOGGER = logging.getLogger(__name__)
@@ -42,9 +44,10 @@ class AtomClient(object):
     This change is due to the fact that slugs are visible by users whereas IDs aren't.
     """
 
-    def __init__(self, url, key):
+    def __init__(self, url, key, timeout=DEFAULT_TIMEOUT):
         self.key = key
         self.base_url = urljoin(url, 'api/')
+        self.timeout = timeout
 
         # Create session that will send the access token on each request
         self.session = requests.Session()
@@ -54,7 +57,7 @@ class AtomClient(object):
         # AtoM's REST API won't parse JSON-encoded body data unless this header's set
         headers = {'Content-type': 'application/json'} if data is not None else None
 
-        response = method(url, params=params, data=data, headers=headers)
+        response = method(url, params=params, data=data, headers=headers, timeout=self.timeout)
         if response.status_code != expected_response:
             LOGGER.error('Response code: %s', response.status_code)
             LOGGER.error('Response body: %s', response.text)
