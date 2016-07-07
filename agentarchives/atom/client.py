@@ -43,9 +43,6 @@ class AtomClient(object):
     This change is due to the fact that slugs are visible by users whereas IDs aren't.
     """
 
-    RESOURCE = 'resource'
-    RESOURCE_COMPONENT = 'resource_component'
-
     def __init__(self, url, key):
         self.key = key
         self.base_url = urljoin(url, 'api/')
@@ -392,24 +389,17 @@ class AtomClient(object):
         Given the slug of a description, returns the parent description's slug.
 
         :param string slug: The slug of a description.
-        :return: A tuple containing:
-            * The type of the parent record; valid values are AtomClient.RESOURCE and AtomClient.RESOURCE_COMPONENT.
-            * The URL of the parent record.
-            If the provided URL fragment references a resource, this method will simply return the same URL.
-        :rtype tuple:
+        :return: The URL of the parent record.
+        :rtype: string
         """
         response = self.get_record(slug)
 
         if 'parent' in response:
-            parent_response = self.get_record(response['parent'])
-            if 'parent' in parent_response:
-                return (AtomClient.RESOURCE_COMPONENT, response['parent'])
-            else:
-                return (AtomClient.RESOURCE, response['parent'])
+            return response['parent']
         # resource was passed in, which has no higher-up record;
         # return the same ID
         else:
-            return (AtomClient.RESOURCE, slug)
+            return slug
 
     def find_collection_ids(self, search_pattern='', identifier='', fetched=0, page=1):
         """
