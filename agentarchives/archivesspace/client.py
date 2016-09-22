@@ -812,6 +812,7 @@ class ArchivesSpaceClient(object):
 
         if start_date:
             date = {
+                'jsonmodel_type': 'date',
                 'begin': start_date,
                 'date_type': 'inclusive',
                 'label': 'creation',
@@ -819,6 +820,7 @@ class ArchivesSpaceClient(object):
             }
             if end_date:
                 date['end'] = end_date
+            new_object['dates'] = [date]
 
         new_object['notes'] = []
         for note in notes:
