@@ -233,16 +233,19 @@ class ArchivesSpaceClient(object):
             # a request to delete the note.
             record['notes'] = []
 
-        if 'start_date' in new_record:
+        # Create dates object if any of the date fields is populated
+        if 'start_date' in new_record or 'end_date' in new_record or 'date_expression' in new_record:
             date = {
-                'begin': new_record['start_date'],
+                'jsonmodel_type': 'date',
                 'date_type': 'inclusive',
                 'label': 'creation',
             }
-            if 'end_date' in new_record:
-                date['end'] = new_record['end_date']
             if 'date_expression' in new_record:
                 date['expression'] = new_record['date_expression']
+            if 'start_date' in new_record:
+                date['begin'] = new_record['start_date']
+            if 'end_date' in new_record:
+                date['end'] = new_record['end_date']
 
             if len(record['dates']) == 0:
                 record['dates'] = [date]
@@ -810,16 +813,20 @@ class ArchivesSpaceClient(object):
             "resource": {"ref": resource}
         }
 
-        if start_date:
+        # Create dates object if any of the date fields is populated
+        if date_expression or start_date or end_date:
             date = {
                 'jsonmodel_type': 'date',
-                'begin': start_date,
                 'date_type': 'inclusive',
                 'label': 'creation',
-                'expression': date_expression,
             }
+            if date_expression:
+                date['expression'] = date_expression
+            if start_date:
+                date['begin'] = start_date
             if end_date:
                 date['end'] = end_date
+
             new_object['dates'] = [date]
 
         new_object['notes'] = []
