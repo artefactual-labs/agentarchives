@@ -314,7 +314,7 @@ class ArchivesSpaceClient(object):
         if not dates:
             try:
                 start_date = record['dates'][0]['begin']
-            except (IndexError, ValueError):
+            except (IndexError, ValueError, KeyError):
                 return ''
             end_date = record['dates'][0].get('end')
             return self._format_dates(start_date, end_date)
