@@ -125,17 +125,18 @@ class ArchivesSpaceClient(object):
         """
         notes = []
         for note in record['notes']:
-            n = {}
-            n['type'] = note['type']
-            try:
-                if note['jsonmodel_type'] == 'note_singlepart':
-                    n['content'] = note['content'][0]
-                else:
-                    n['content'] = note['subnotes'][0]['content']
-            except (IndexError, KeyError):
-                n['content'] = ''
+            if note.get("type"):
+                n = {}
+                n['type'] = note['type']
+                try:
+                    if note['jsonmodel_type'] == 'note_singlepart':
+                        n['content'] = note['content'][0]
+                    else:
+                        n['content'] = note['subnotes'][0]['content']
+                except (IndexError, KeyError):
+                    n['content'] = ''
 
-            notes.append(n)
+                notes.append(n)
 
         return notes
 
