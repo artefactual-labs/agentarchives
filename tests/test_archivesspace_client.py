@@ -325,6 +325,30 @@ def test_edit_record_empty_note():
     updated = client.get_record('/repositories/2/archival_objects/3')
     assert not updated['notes']
 
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_edit_record_multiple_notes.yaml'))
+def test_edit_record_multiple_notes():
+    client = ArchivesSpaceClient(**AUTH)
+    new_record = {
+        'id': '/repositories/2/archival_objects/9253',
+        'notes': [
+            {
+                'type': 'odd',
+                'content': 'General note content'
+            },
+            {
+                'type': 'accessrestrict',
+                'content': 'Access restriction note',
+            }
+        ],
+    }
+    client.edit_record(new_record)
+    updated = client.get_record('/repositories/2/archival_objects/9253')
+    assert updated['notes'][0]['type'] == new_record['notes'][0]['type']
+    assert updated['notes'][0]['subnotes'][0]['content'] == new_record['notes'][0]['content']
+
+    assert updated['notes'][1]['type'] == new_record['notes'][1]['type']
+    assert updated['notes'][1]['subnotes'][0]['content'] == new_record['notes'][1]['content']
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object.yaml'))
 def test_add_digital_object():
     client = ArchivesSpaceClient(**AUTH)

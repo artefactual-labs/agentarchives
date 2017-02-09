@@ -207,27 +207,25 @@ class ArchivesSpaceClient(object):
                 continue
 
         if 'notes' in new_record and new_record['notes'] and new_record['notes'][0].get('content', ''):
-            note = new_record['notes'][0]
-            new_note = {
-                'jsonmodel_type': 'note_multipart',
-                'publish': True,
-                'subnotes': [{
-                    'content': note['content'],
-                    'jsonmodel_type': 'note_text',
-                    'publish': True,
-                }],
-                'type': note['type'],
-            }
-            # This only supports editing a single note, and a single piece of content
-            # within that note.
-            # If the record already has at least one note, then replace the first note
-            # within that record with this one.
-            if not record['notes']:
-                record['notes'] = [new_note]
-            else:
-                record['notes'][0] = new_note
-
-            fields_updated = True
+            # This assumes any notes passed into the edit record are intended to replace the existing set
+            new_notes = []
+            for note in new_record['notes']:
+                # Whitelist of supported types of notes to edit
+                if note['type'] in ('odd', 'accessrestrict') and note.get('content'):
+                    new_notes.append({
+                        'jsonmodel_type': 'note_multipart',
+                        'publish': True,
+                        'subnotes': [{
+                            'content': note['content'],
+                            'jsonmodel_type': 'note_text',
+                            'publish': True,
+                        }],
+                        'type': note['type'],
+                    })
+            # Only update notes if there are actually valid changes to be made
+            if new_notes:
+                record['notes'] = new_notes
+                fields_updated = True
         else:
             # Remove existing notes if the record didn't have a valid note;
             # a note with an empty string as content should be counted as
