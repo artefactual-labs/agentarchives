@@ -4,6 +4,12 @@ Clients to retrieve, add, and modify records from archival management systems.
 
 ## Installation
 
+Agentarchives is on [PyPI](https://pypi.python.org/pypi/agentarchives)!
+
+`pip install agentarchives`
+
+Or you can install it directly from git
+
 `pip install git+https://github.com/artefactual-labs/agentarchives.git`
 
 ## Usage
