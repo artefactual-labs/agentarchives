@@ -1,0 +1,9 @@
+FROM python:3
+
+ENV PYTHONPATH /src
+WORKDIR /src
+
+COPY ./requirements /src/requirements
+RUN pip install -r /src/requirements/local.txt
+
+COPY . /src
