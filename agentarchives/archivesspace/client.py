@@ -206,11 +206,12 @@ class ArchivesSpaceClient(object):
             except KeyError:
                 continue
 
-        if 'notes' in new_record and new_record['notes'] and new_record['notes'][0].get('content', ''):
+        if 'notes' in new_record and new_record['notes']:
             # This assumes any notes passed into the edit record are intended to replace the existing set
             new_notes = []
             for note in new_record['notes']:
                 # Whitelist of supported types of notes to edit
+                # A note with an empty string as content is counted as a request to delete the note, and will not be added to the list.
                 if note['type'] in ('odd', 'accessrestrict') and note.get('content'):
                     new_notes.append({
                         'jsonmodel_type': 'note_multipart',
@@ -222,15 +223,10 @@ class ArchivesSpaceClient(object):
                         }],
                         'type': note['type'],
                     })
-            # Only update notes if there are actually valid changes to be made
-            if new_notes:
-                record['notes'] = new_notes
-                fields_updated = True
-        else:
-            # Remove existing notes if the record didn't have a valid note;
-            # a note with an empty string as content should be counted as
-            # a request to delete the note.
-            record['notes'] = []
+
+            # If the new_record field was populated, assume that we want to replace the notes.  If there are valid changes to be made, they will be added to the new_notes list. An empty list is counted as a request to delete all notes.
+            record['notes'] = new_notes
+            fields_updated = True
 
         # Create dates object if any of the date fields is populated
         if 'start_date' in new_record or 'end_date' in new_record or 'date_expression' in new_record:
