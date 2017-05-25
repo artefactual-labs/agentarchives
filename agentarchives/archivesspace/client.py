@@ -671,7 +671,7 @@ class ArchivesSpaceClient(object):
 
         if not title:
             filename = os.path.basename(uri) if uri is not None else 'Untitled'
-            title = parent_record.get('title', filename)
+            title = parent_record.get('display_string', filename)
 
         new_object = {
             "title": title,
