@@ -49,12 +49,20 @@ class ArchivesSpaceClient(object):
     RESOURCE_COMPONENT = 'resource_component'
 
     def __init__(self, host, user, passwd, port=8089, repository=2, timeout=DEFAULT_TIMEOUT):
+        """
+        In order to make this library compatible with hosted ArchivesSpace
+        - 'host' shall be not only the host name but the url of the backend,
+          including protocol identifier, path and port number
+          For example 'https://myserver.org/api'
+                      'http://anotherserver.org:8089'
+        - 'port' will be ignored (not removed for now to avoid breaking changes)
+        """
         parsed = urlparse(host)
         if not parsed.scheme:
             host = 'http://' + host
 
         self.timeout = timeout
-        self.host = host + ':' + str(port)
+        self.host = host
         self.user = user
         self.passwd = passwd
         self.repository = '/repositories/{}'.format(repository)
