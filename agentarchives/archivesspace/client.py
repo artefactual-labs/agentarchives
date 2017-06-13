@@ -141,6 +141,45 @@ class ArchivesSpaceClient(object):
         return notes
 
     @staticmethod
+    def _process_notes(record, new_record):
+        """
+        Populate the notes property using the provided new_record.
+
+        If the new_record field was populated, assume that we want to replace
+        the notes. If there are valid changes to be made, they will be added to
+        the new_notes list. An empty list is counted as a request to delete all
+        notes.
+
+        Returns a boolean indicating whether changes were made.
+        """
+        if 'notes' not in new_record or not new_record['notes']:
+            return False
+
+        # This assumes any notes passed into the edit record are intended to
+        # replace the existing set.
+        new_notes = []
+        for note in new_record['notes']:
+            # Whitelist of supported types of notes to edit
+            # A note with an empty string as content is counted as a request to
+            # delete the note, and will not be added to the list.
+            if note['type'] in ('odd', 'accessrestrict') \
+               and note.get('content'):
+                new_notes.append({
+                    'jsonmodel_type': 'note_multipart',
+                    'publish': True,
+                    'subnotes': [{
+                        'content': note['content'],
+                        'jsonmodel_type': 'note_text',
+                        'publish': True,
+                    }],
+                    'type': note['type'],
+                })
+
+        record['notes'] = new_notes
+
+        return True
+
+    @staticmethod
     def _escape_solr_query(query, field='title'):
         """
         Escapes special characters in Solr queries.
@@ -206,26 +245,7 @@ class ArchivesSpaceClient(object):
             except KeyError:
                 continue
 
-        if 'notes' in new_record and new_record['notes']:
-            # This assumes any notes passed into the edit record are intended to replace the existing set
-            new_notes = []
-            for note in new_record['notes']:
-                # Whitelist of supported types of notes to edit
-                # A note with an empty string as content is counted as a request to delete the note, and will not be added to the list.
-                if note['type'] in ('odd', 'accessrestrict') and note.get('content'):
-                    new_notes.append({
-                        'jsonmodel_type': 'note_multipart',
-                        'publish': True,
-                        'subnotes': [{
-                            'content': note['content'],
-                            'jsonmodel_type': 'note_text',
-                            'publish': True,
-                        }],
-                        'type': note['type'],
-                    })
-
-            # If the new_record field was populated, assume that we want to replace the notes.  If there are valid changes to be made, they will be added to the new_notes list. An empty list is counted as a request to delete all notes.
-            record['notes'] = new_notes
+        if self._process_notes(record, new_record):
             fields_updated = True
 
         # Create dates object if any of the date fields is populated
@@ -253,6 +273,7 @@ class ArchivesSpaceClient(object):
             raise ValueError('No fields to update specified!')
 
         self._post(record_id, data=json.dumps(record))
+
 
     def get_levels_of_description(self):
         """

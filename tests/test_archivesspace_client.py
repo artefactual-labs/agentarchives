@@ -1,8 +1,11 @@
 # -*- coding: UTF-8 -*-
 import os
 
-import pytest
+import collections
 import sys
+import unittest
+
+import pytest
 import vcr
 
 here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -443,3 +446,126 @@ def test_escaping_solr_queries():
     # And double characters, which require only one set of escape tokens
     assert escape('&&test', field='identifier') == r'\&&test'
     assert escape('test') == 'test'
+
+
+def test_process_notes(monkeypatch):
+    empty_note = {'type': 'odd'}
+    TestCase = collections.namedtuple('TestCase', 'new_record ret notes')
+    tests = (
+        # No notes submitted.
+        # Behaviour: return False, do nothing.
+        TestCase(
+            new_record={},
+            ret=False,
+            notes=None
+        ),
+        # Empty list.
+        # Behaviour: return False, do nothing.
+        TestCase(
+            new_record={
+                'notes': []
+            },
+            ret=False,
+            notes=None
+        ),
+        # Single empty note.
+        # Behaviour: return True, delete notes (empty list).
+        TestCase(
+            new_record={
+                'notes': [
+                    empty_note
+                ]
+            },
+            ret=True,
+            notes=[]
+        ),
+        # Multiple notes, all are empty.
+        # Behaviour: return True, delete notes (empty list).
+        TestCase(
+            new_record={
+                'notes': [
+                    empty_note,
+                    empty_note
+                ]
+            },
+            ret=True,
+            notes=[]
+        ),
+        # Multiple notes, first is empty.
+        # Behaviour: return True, replace with only non-empty nodes.
+        TestCase(
+            new_record={
+                'notes': [
+                    empty_note,
+                    {
+                        'type': 'odd',
+                        'content': 'foobar'
+                    }
+                ]
+            },
+            ret=True,
+            notes=[
+                {
+                    'jsonmodel_type': 'note_multipart',
+                    'publish': True,
+                    'subnotes': [
+                        {
+                            'content': 'foobar',
+                            'jsonmodel_type': 'note_text',
+                            'publish': True
+                        }
+                    ],
+                    'type': 'odd'
+                }
+            ]
+        ),
+        # Multiple notes with content.
+        # Behaviour: return True, replace with all notes.
+        TestCase(
+            new_record={
+                'notes': [
+                    {
+                        'type': 'odd',
+                        'content': 'foobar 1'
+                    },
+                    {
+                        'type': 'odd',
+                        'content': 'foobar 2'
+                    }
+                ]
+            },
+            ret=True,
+            notes=[
+                {
+                    'jsonmodel_type': 'note_multipart',
+                    'publish': True,
+                    'subnotes': [
+                        {
+                            'content': 'foobar 1',
+                            'jsonmodel_type': 'note_text',
+                            'publish': True
+                        }
+                    ],
+                    'type': 'odd'
+                },
+                {
+                    'jsonmodel_type': 'note_multipart',
+                    'publish': True,
+                    'subnotes': [
+                        {
+                            'content': 'foobar 2',
+                            'jsonmodel_type': 'note_text',
+                            'publish': True
+                        }
+                    ],
+                    'type': 'odd'
+                }
+            ]
+        )
+    )
+    for tcase in tests:
+        record = {}
+        ret = ArchivesSpaceClient._process_notes(record, tcase.new_record)
+        assert ret == tcase.ret
+        if ret:  # Avoid KeyError when we already know it's undefined.
+            assert record['notes'] == tcase.notes
