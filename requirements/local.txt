@@ -1,4 +1,5 @@
 -r base.txt
 
 pytest>=2,<3
+pytest-cov>=2,<3
 vcrpy>=1,<2
