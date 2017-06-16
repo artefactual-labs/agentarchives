@@ -1,3 +1,5 @@
+[![PyPI version](https://img.shields.io/pypi/v/agentarchives.svg)](https://pypi.python.org/pypi/agentarchives) [![Build status](https://travis-ci.org/artefactual-labs/agentarchives.svg?branch=master)](https://travis-ci.org/artefactual-labs/agentarchives)
+
 # agentarchives
 
 Clients to retrieve, add, and modify records from archival management systems.
