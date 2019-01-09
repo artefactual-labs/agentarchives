@@ -221,7 +221,7 @@ class ArchivistsToolkitClient(object):
         # can use it to share state during recursion
 
         recurse_max_level = kwargs.get('recurse_max_level', False)
-        query             = kwargs.get('search_pattern', '')
+        query = kwargs.get('search_pattern', '')
 
         # intialize sort position if this is the beginning of recursion
         if level == 1:
@@ -237,26 +237,26 @@ class ArchivistsToolkitClient(object):
             cursor.execute("SELECT title, dateExpression, resourceIdentifier1, resourceLevel FROM Resources WHERE resourceid=%s", (resource_id))
 
             for row in cursor.fetchall():
-                resource_data['id']                 = resource_id
-                resource_data['type']               = 'resource'
-                resource_data['sortPosition']       = sort_data['position']
-                resource_data['title']              = row[0]
+                resource_data['id'] = resource_id
+                resource_data['type'] = 'resource'
+                resource_data['sortPosition'] = sort_data['position']
+                resource_data['title'] = row[0]
                 # TODO reformat dates from the separate date fields, like ArchivesSpaceClient?
-                resource_data['dates']              = row[1]
-                resource_data['date_expression']    = row[1]
-                resource_data['identifier']         = row[2]
+                resource_data['dates'] = row[1]
+                resource_data['date_expression'] = row[1]
+                resource_data['identifier'] = row[2]
                 resource_data['levelOfDescription'] = row[3]
         else:
             cursor.execute("SELECT title, dateExpression, persistentID, resourceLevel FROM ResourcesComponents WHERE resourceComponentId=%s", (resource_id))
 
             for row in cursor.fetchall():
-                resource_data['id']                 = resource_id
-                resource_data['type']               = 'resource_component'
-                resource_data['sortPosition']       = sort_data['position']
-                resource_data['title']              = row[0]
-                resource_data['dates']              = row[1]
-                resource_data['date_expression']    = row[1]
-                resource_data['identifier']         = row[2]
+                resource_data['id'] = resource_id
+                resource_data['type'] = 'resource_component'
+                resource_data['sortPosition'] = sort_data['position']
+                resource_data['title'] = row[0]
+                resource_data['dates'] = row[1]
+                resource_data['date_expression'] = row[1]
+                resource_data['identifier'] = row[2]
                 resource_data['levelOfDescription'] = row[3]
 
         # fetch children if we haven't reached the maximum recursion level
