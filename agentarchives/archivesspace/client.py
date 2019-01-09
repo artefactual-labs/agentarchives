@@ -306,11 +306,9 @@ class ArchivesSpaceClient(object):
 
         self._post(record_id, data=json.dumps(record))
 
-
     def get_levels_of_description(self):
-        """
-        Returns an array of all levels of description defined in this ArchivesSpace instance.
-        """
+        """Returns an array of all levels of description defined in this
+        ArchivesSpace instance."""
         if not hasattr(self, 'levels_of_description'):
             # TODO: * fetch human-formatted strings
             #       * is hardcoding this ID okay?
@@ -752,7 +750,7 @@ class ArchivesSpaceClient(object):
                 "xlink_actuate_attribute": xlink_actuate,
             }]
 
-        note_digital_object_type = ["summary", "bioghist", "accessrestrict", "userestrict", "custodhist", "dimensions", "edition", "extent","altformavail", "originalsloc", "note", "acqinfo", "inscription", "langmaterial", "legalstatus", "physdesc", "prefercite", "processinfo", "relatedmaterial"]
+        note_digital_object_type = ["summary", "bioghist", "accessrestrict", "userestrict", "custodhist", "dimensions", "edition", "extent", "altformavail", "originalsloc", "note", "acqinfo", "inscription", "langmaterial", "legalstatus", "physdesc", "prefercite", "processinfo", "relatedmaterial", ]
 
         if inherit_notes:
             for pnote in parent_record["notes"]:

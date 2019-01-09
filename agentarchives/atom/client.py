@@ -144,8 +144,6 @@ class AtomClient(object):
 
     def _format_date_from_atom(self, date):
         # Map AtoM date specification to generic
-        updated_date = {}
-
         date_mapping = {
             'start_date': 'begin',
             'end_date': 'end',
@@ -200,7 +198,7 @@ class AtomClient(object):
             # within that note.
             # If the record already has at least one note, then replace the first note
             # within that record with this one.
-            if not 'notes' in record or record['notes'] == []:
+            if 'notes' not in record or record['notes'] == []:
                 record['notes'] = [new_note]
             else:
                 record['notes'][0] = new_note
@@ -222,9 +220,9 @@ class AtomClient(object):
         # Map agentarchives date specification to AtoM specification
         date_mapping = {
             'start_date': 'start_date',
-            #'begin': 'start_date',
+            # 'begin': 'start_date',
             'end_date': 'end_date',
-            #'end': 'end_date',
+            # 'end': 'end_date',
             'date_expression': 'date'
         }
 
@@ -539,8 +537,8 @@ class AtomClient(object):
         """
         resources_augmented = []
         for id in resource_ids:
-            #resource_data = self.get_resource_component_and_children(id, recurse_max_level=2)
-            #resources_augmented.append(resource_data)
+            # resource_data = self.get_resource_component_and_children(id, recurse_max_level=2)
+            # resources_augmented.append(resource_data)
             resources_augmented.append(
                 self.get_resource_component_and_children(id, recurse_max_level=2)
             )

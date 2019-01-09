@@ -2,13 +2,9 @@
 import os
 
 import pytest
-import sys
 import vcr
 
-here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, here)
-
-from agentarchives.atom.client  import AtomClient, AtomError, CommunicationError
+from agentarchives.atom.client import AtomClient, CommunicationError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {
@@ -21,7 +17,7 @@ AUTH = {
 def test_levels_of_description():
     client = AtomClient(**AUTH)
     levels = client.get_levels_of_description()
-    assert levels == [u'Collection', u'File', u'Fonds', u'Item', u'Part', u'Series', u'Subfonds', u'Subseries'] 
+    assert levels == [u'Collection', u'File', u'Fonds', u'Item', u'Part', u'Series', u'Subfonds', u'Subseries']
 
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures/atom', 'test_listing_collections.yaml'))
@@ -125,7 +121,7 @@ def test_find_resource_children_recursion_level():
     assert data['has_children'] is True
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures/atom', 'test_find_resource_children_recursion_level_two.yaml'))
+@vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures/atom', 'test_find_resource_children_recursion_level_two.yaml'))  # noqa
 def test_find_resource_children_recursion_level():
     client = AtomClient(**AUTH)
     data = client.get_resource_component_and_children('test-fonds',
@@ -208,9 +204,9 @@ def test_add_child_resource_component():
 def test_adding_child_with_note():
     client = AtomClient(**AUTH)
     slug = client.add_child('test-fonds',
-                           title='Another subfonds',
-                           level='subfonds',
-                           notes=[{'type': 'general', 'content': 'This is a test note'}])
+                            title='Another subfonds',
+                            level='subfonds',
+                            notes=[{'type': 'general', 'content': 'This is a test note'}])
     assert slug == 'another-subfonds'
 
 
@@ -218,9 +214,9 @@ def test_adding_child_with_note():
 def test_posting_contentless_note():
     client = AtomClient(**AUTH)
     slug = client.add_child('test-fonds',
-                           title='Yet another subfonds',
-                           level='subfonds',
-                           notes=[{'type': 'general', 'content': ''}])
+                            title='Yet another subfonds',
+                            level='subfonds',
+                            notes=[{'type': 'general', 'content': ''}])
     assert client.get_record(slug)['notes'] == []
 
 
