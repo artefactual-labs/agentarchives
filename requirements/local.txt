@@ -1,5 +1,6 @@
 -r base.txt
 
-pytest>=2,<3
+pytest>=4,<5
 pytest-cov>=2,<3
+pytest-mock>=1,<2
 vcrpy>=1,<2

@@ -3,7 +3,6 @@ import os
 
 import collections
 import sys
-import unittest
 
 import pytest
 import vcr
@@ -15,10 +14,75 @@ from agentarchives.archivesspace.client import ArchivesSpaceClient, ArchivesSpac
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {
-    'host': 'http://localhost',
+    'host': 'http://localhost:8089',
     'user': 'admin',
     'passwd': 'admin'
 }
+
+
+@pytest.mark.parametrize("params,raises,base_url", [
+    # These are pairs that we don't like and we raise.
+    (
+        {"host": "", "port": ""},
+        True, None,
+    ),
+    (
+        {"host": "", "port": "string"},
+        True, None,
+    ),
+    (
+        {"host": "string", "port": "string"},
+        True, None,
+    ),
+    # When `host` is not a URL.
+    (
+        {"host": "localhost"},
+        False, "http://localhost:8089",
+    ),
+    (
+        {"host": "localhost:8000"},
+        False, "http://localhost:8000",
+    ),
+    (
+        {"host": "localhost", "port": 12345},
+        False, "http://localhost:12345",
+    ),
+    (
+        {"host": "localhost", "port": "12345"},
+        False, "http://localhost:12345",
+    ),
+    (
+        {"host": "localhost", "port": None},
+        False, "http://localhost",
+    ),
+    # When `host` is a URL!
+    (
+        {"host": "http://apiserver"},
+        False, "http://apiserver",
+    ),
+    (
+        {"host": "http://apiserver:12345/path/"},
+        False, "http://apiserver:12345/path",
+    ),
+    (
+        {"host": "https://apiserver:12345"},
+        False, "https://apiserver:12345",
+    ),
+    (
+        {"host": "https://apiserver:12345", "port": 999},
+        False, "https://apiserver:12345",
+    ),
+])
+def test_base_url_config(mocker, params, raises, base_url):
+    kwargs = {"user": "foo", "passwd": "bar"}
+    kwargs.update(params)
+    if raises:
+        with pytest.raises(Exception):
+            ArchivesSpaceClient(**kwargs)
+        return
+    mocker.patch("agentarchives.archivesspace.ArchivesSpaceClient._login")
+    client = ArchivesSpaceClient(**kwargs)
+    assert client.base_url == base_url, "Failed with params: {}".format(params)
 
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections.yaml'))

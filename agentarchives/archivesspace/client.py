@@ -49,20 +49,52 @@ class ArchivesSpaceClient(object):
     RESOURCE_COMPONENT = 'resource_component'
 
     def __init__(self, host, user, passwd, port=8089, repository=2, timeout=DEFAULT_TIMEOUT):
-        parsed = urlparse(host)
-        if not parsed.scheme:
-            host = 'http://' + host
+        """Create a new client.
 
+        ``host`` is the network location of the API server, e.g. ``localhost``.
+        It is preferably to pass URLs because they are more flexible. E.g. the
+        following are supported values::
+
+          - ``host="http://locahost"``
+          - ``host="https://locahost"``
+          - ``host="https://locahost:12345"``
+          - ``host="https://locahost:12345/foo/bar/"``
+
+        ``port`` is only used when ``host`` is not a URL *and* the value does
+        not contain already a port number, e.g.::
+
+          - ``host="localhost"`` (``port`` will be applied)
+          - ``host="localhost:12345"`` (``port`` will be ignored)
+          - ``host="http://localhost"`` (``port`` will be ignored)
+
+        """
+        self.base_url = self._build_base_url(host, port)
         self.timeout = timeout
-        self.host = host + ':' + str(port)
         self.user = user
         self.passwd = passwd
         self.repository = '/repositories/{}'.format(repository)
         self._login()
 
+    def _build_base_url(self, host, port):
+        """Return the API base URL string based on ``host`` and ``port``.
+
+        It returns a valid URL when ``host`` isn't. The endling slash is always
+        removed so it always need to be added by the consumer.
+        """
+        parsed = urlparse(host)
+        if not parsed.scheme:
+            parsed = parsed._replace(scheme="http")
+            parsed = parsed._replace(path="")
+            netloc, parts = host, host.partition(":")
+            if parts[1] == "" and port is not None:
+                netloc = "{}:{}".format(parts[0], port)
+            parsed = parsed._replace(netloc=netloc)
+        parsed = parsed._replace(path=parsed.path.rstrip("/"))
+        return parsed.geturl()
+
     def _login(self):
         try:
-            response = requests.post(self.host + '/users/' + self.user + '/login', data={'password': self.passwd, 'expiring': False}, timeout=self.timeout)
+            response = requests.post(self.base_url + '/users/' + self.user + '/login', data={'password': self.passwd, 'expiring': False}, timeout=self.timeout)
         except requests.ConnectionError as e:
             raise ConnectionError("Unable to connect to ArchivesSpace server: " + str(e))
 
@@ -83,7 +115,7 @@ class ArchivesSpaceClient(object):
         if not url.startswith('/'):
             url = '/' + url
 
-        response = method(self.host + url, params=params, data=data)
+        response = method(self.base_url + url, params=params, data=data)
         if response.status_code != expected_response:
             LOGGER.error('Response code: %s', response.status_code)
             LOGGER.error('Response body: %s', response.text)
