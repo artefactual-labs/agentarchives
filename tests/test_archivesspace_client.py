@@ -2,23 +2,84 @@
 import os
 
 import collections
-import sys
-import unittest
 
 import pytest
 import vcr
 
-here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, here)
-
 from agentarchives.archivesspace.client import ArchivesSpaceClient, ArchivesSpaceError, CommunicationError
+
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {
-    'host': 'http://localhost',
+    'host': 'http://localhost:8089',
     'user': 'admin',
     'passwd': 'admin'
 }
+
+
+@pytest.mark.parametrize("params,raises,base_url", [
+    # These are pairs that we don't like and we raise.
+    (
+        {"host": "", "port": ""},
+        True, None,
+    ),
+    (
+        {"host": "", "port": "string"},
+        True, None,
+    ),
+    (
+        {"host": "string", "port": "string"},
+        True, None,
+    ),
+    # When `host` is not a URL.
+    (
+        {"host": "localhost"},
+        False, "http://localhost:8089",
+    ),
+    (
+        {"host": "localhost:8000"},
+        False, "http://localhost:8000",
+    ),
+    (
+        {"host": "localhost", "port": 12345},
+        False, "http://localhost:12345",
+    ),
+    (
+        {"host": "localhost", "port": "12345"},
+        False, "http://localhost:12345",
+    ),
+    (
+        {"host": "localhost", "port": None},
+        False, "http://localhost",
+    ),
+    # When `host` is a URL!
+    (
+        {"host": "http://apiserver"},
+        False, "http://apiserver",
+    ),
+    (
+        {"host": "http://apiserver:12345/path/"},
+        False, "http://apiserver:12345/path",
+    ),
+    (
+        {"host": "https://apiserver:12345"},
+        False, "https://apiserver:12345",
+    ),
+    (
+        {"host": "https://apiserver:12345", "port": 999},
+        False, "https://apiserver:12345",
+    ),
+])
+def test_base_url_config(mocker, params, raises, base_url):
+    kwargs = {"user": "foo", "passwd": "bar"}
+    kwargs.update(params)
+    if raises:
+        with pytest.raises(Exception):
+            ArchivesSpaceClient(**kwargs)
+        return
+    mocker.patch("agentarchives.archivesspace.ArchivesSpaceClient._login")
+    client = ArchivesSpaceClient(**kwargs)
+    assert client.base_url == base_url, "Failed with params: {}".format(params)
 
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections.yaml'))
@@ -151,6 +212,7 @@ def test_find_collection_ids_search():
     ids = client.find_collection_ids(search_pattern='Some')
     assert ids == ['/repositories/2/resources/2']
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_count_collection_ids.yaml'))
 def test_count_collection_ids():
     client = ArchivesSpaceClient(**AUTH)
@@ -164,6 +226,7 @@ def test_count_collection_ids_search():
     ids = client.count_collections(search_pattern='Some')
     assert ids == 1
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_find_by_id_refid.yaml'))
 def test_find_by_id_refid():
     client = ArchivesSpaceClient(**AUTH)
@@ -176,6 +239,7 @@ def test_find_by_id_refid():
     assert item['title'] == 'Test AO'
     assert item['levelOfDescription'] == 'file'
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_augment_ids.yaml'))
 def test_augment_ids():
     client = ArchivesSpaceClient(**AUTH)
@@ -186,11 +250,13 @@ def test_augment_ids():
     assert data[1]['title'] == 'Some other fonds'
     assert data[1]['type'] == 'resource'
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_resource_type.yaml'))
 def test_get_resource_type():
     client = ArchivesSpaceClient(**AUTH)
     assert client.resource_type('/repositories/2/resources/2') == 'resource'
     assert client.resource_type('/repositories/2/archival_objects/3') == 'resource_component'
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_resource_type.yaml'))
 def test_get_resource_type_raises_on_invalid_input():
@@ -198,12 +264,14 @@ def test_get_resource_type_raises_on_invalid_input():
     with pytest.raises(ArchivesSpaceError):
         client.resource_type('invalid')
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_identifier_exact_match.yaml'))
 def test_identifier_search_exact_match():
     client = ArchivesSpaceClient(**AUTH)
     assert client.find_collection_ids(identifier='F1') == ['/repositories/2/resources/1']
     assert client.count_collections(identifier='F1') == 1
     assert len(client.find_collections(identifier='F1')) == 1
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_identifier_wildcard.yaml'))
 def test_identifier_search_wildcard():
@@ -217,17 +285,20 @@ def test_identifier_search_wildcard():
     assert client.count_collections(identifier='F*') == 2
     assert len(client.find_collections(identifier='F*')) == 2
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_child_resource.yaml'))
 def test_add_child_resource():
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child('/repositories/2/resources/2', title='Test child', level='item')
     assert uri == '/repositories/2/archival_objects/3'
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_child_resource_component.yaml'))
 def test_add_child_resource_component():
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child('/repositories/2/archival_objects/1', title='Test child', level='item')
     assert uri == '/repositories/2/archival_objects/5'
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_adding_child_with_note.yaml'))
 def test_adding_child_with_note():
@@ -238,6 +309,7 @@ def test_adding_child_with_note():
                            notes=[{'type': 'odd', 'content': 'This is a test note'}])
     assert uri == '/repositories/2/archival_objects/24'
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_posting_contentless_note.yaml'))
 def test_posting_contentless_note():
     client = ArchivesSpaceClient(**AUTH)
@@ -246,6 +318,7 @@ def test_posting_contentless_note():
                            level='recordgrp',
                            notes=[{'type': 'odd', 'content': ''}])
     assert client.get_record(uri)['notes'] == []
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_posting_multiple_notes.yaml'))
 def test_posting_multiple_notes():
@@ -260,6 +333,7 @@ def test_posting_multiple_notes():
     assert record['notes'][1]['type'] == 'accessrestrict'
     assert record['notes'][1]['subnotes'][0]['content'] == 'Access'
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_delete_record_resource.yaml'))
 def test_delete_record_resource():
     client = ArchivesSpaceClient(**AUTH)
@@ -270,6 +344,7 @@ def test_delete_record_resource():
     with pytest.raises(CommunicationError):
         client.get_record(record_id)
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_delete_record_archival_object.yaml'))
 def test_delete_record_archival_object():
     client = ArchivesSpaceClient(**AUTH)
@@ -279,6 +354,7 @@ def test_delete_record_archival_object():
     assert r['status'] == 'Deleted'
     with pytest.raises(CommunicationError):
         client.get_record(record_id)
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_edit_archival_object.yaml'))
 def test_edit_archival_object():
@@ -328,6 +404,7 @@ def test_edit_record_empty_note():
     updated = client.get_record('/repositories/2/archival_objects/3')
     assert not updated['notes']
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_edit_record_multiple_notes.yaml'))
 def test_edit_record_multiple_notes():
     client = ArchivesSpaceClient(**AUTH)
@@ -351,6 +428,7 @@ def test_edit_record_multiple_notes():
 
     assert updated['notes'][1]['type'] == new_record['notes'][1]['type']
     assert updated['notes'][1]['subnotes'][0]['content'] == new_record['notes'][1]['content']
+
 
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_add_digital_object.yaml'))
 def test_add_digital_object():
