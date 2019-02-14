@@ -66,6 +66,7 @@ def test_logout():
     client.logout()
     assert client.session is None
 
+
 @vcr.use_cassette(os.path.join(THIS_DIR, 'fixtures', 'test_listing_collections.yaml'))
 >>>>>>> Adds a public logout method to the ArchivesSpace client
 def test_listing_collections():
