@@ -15,7 +15,7 @@ Or you can install it directly from git
 `pip install git+https://github.com/artefactual-labs/agentarchives.git`
 
 ### Dependency issue on MacOs
-Agentarchvies depends on the [mysqlclient](https://pypi.org/project/mysqlclient/) package which has a [bug](https://bugs.mysql.com/bug.php?id=86971) which can possibly fail an install when using homebrew on MacOs computers. A solution suggested on the mysqlclient site is to change on or about line 112:
+Agentarchvies depends on the [mysqlclient](https://pypi.org/project/mysqlclient/) package which has a [bug](https://bugs.mysql.com/bug.php?id=86971) which can possibly fail an install when using homebrew on MacOs computers. A solution suggested on the mysqlclient site is to change `mysql_config` on or about line 112:
 
 ```
 # Create options

@@ -101,6 +101,13 @@ class ArchivesSpaceClient(object):
         return parsed.geturl()
 
     def _login(self):
+        """
+        Logs into ArchivesSpace server and establishes a session with a token
+        returned from server.
+
+        Sets 'expiring' parameter to false meaning the session timeouts after
+        604800 seconds (a week) of inactivity.
+        """
         try:
             response = requests.post(
                 self.base_url + "/users/" + self.user + "/login",
@@ -132,6 +139,20 @@ class ArchivesSpaceClient(object):
 
         self.session = requests.Session()
         self.session.headers.update({"X-ArchivesSpace-Session": token})
+
+    def logout(self):
+        """
+        Explicitly log out of ArchivesSpace.
+        Public method because it needs to be called directly.
+        By default we log into ArchiveSpace with the 'expiring' param set to false,
+        meaning the session timeouts in 604800 seconds (a week) of inactivity.
+        """
+        try:
+            self._post('/logout')
+            self.session.close()
+            self.session = None
+        except requests.ConnectionError as e:
+            raise ConnectionError("Unable to logout from ArchivesSpace server: " + str(e))
 
     def _request(self, method, url, params, expected_response, data=None):
         if not url.startswith("/"):
