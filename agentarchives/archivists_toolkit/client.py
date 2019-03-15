@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-__all__ = ['ArchivistsToolkitError', 'ArchivistsToolkitClient']
+__all__ = ["ArchivistsToolkitError", "ArchivistsToolkitClient"]
 
 
 class ArchivistsToolkitError(Exception):
@@ -17,28 +17,30 @@ class ArchivistsToolkitError(Exception):
 
 
 class ArchivistsToolkitClient(object):
-    RESOURCE = 'resource'
-    RESOURCE_COMPONENT = 'resource_component'
+    RESOURCE = "resource"
+    RESOURCE_COMPONENT = "resource_component"
 
     def __init__(self, host, user, passwd, db):
         try:
             self.user = user
-            self.db = MySQLdb.connect(host=host,
-                                      user=user,
-                                      passwd=passwd,
-                                      db=db)
-            logger.debug('Connected to ATK database: %s', db)
+            self.db = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
+            logger.debug("Connected to ATK database: %s", db)
         except Exception:
-            logger.exception('Error connecting to ATK database')
+            logger.exception("Error connecting to ATK database")
             raise
 
     def resource_type(self, resource_id):
         cursor = self.db.cursor()
-        cursor.execute("SELECT resourceId FROM Resources WHERE resourceId=%s", (resource_id,))
+        cursor.execute(
+            "SELECT resourceId FROM Resources WHERE resourceId=%s", (resource_id,)
+        )
         if cursor.fetchone() is not None:
             return ArchivistsToolkitClient.RESOURCE
 
-        cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE resourceComponentId=%s", (resource_id,))
+        cursor.execute(
+            "SELECT resourceComponentId FROM ResourcesComponents WHERE resourceComponentId=%s",
+            (resource_id,),
+        )
         if cursor.fetchone() is not None:
             return ArchivistsToolkitClient.RESOURCE_COMPONENT
 
@@ -56,34 +58,38 @@ class ArchivistsToolkitClient(object):
         :raises ValueError: if the 'id' field isn't specified, or no fields to edit were specified.
         """
         try:
-            record_id = new_record['id']
+            record_id = new_record["id"]
         except KeyError:
-            raise ValueError('No record ID provided!')
+            raise ValueError("No record ID provided!")
 
         record_type = self.resource_type(record_id)
         if record_type is None:
-            raise ArchivistsToolkitError('Could not determine type for record with ID {}; not in database?'.format(record_id))
+            raise ArchivistsToolkitError(
+                "Could not determine type for record with ID {}; not in database?".format(
+                    record_id
+                )
+            )
 
         clause = []
         values = []
-        if 'title' in new_record:
-            clause.append('title=%s')
-            values.append(new_record['title'])
-        if 'levelOfDescription' in new_record:
-            clause.append('resourceLevel=%s')
-            values.append(new_record['levelOfDescription'])
+        if "title" in new_record:
+            clause.append("title=%s")
+            values.append(new_record["title"])
+        if "levelOfDescription" in new_record:
+            clause.append("resourceLevel=%s")
+            values.append(new_record["levelOfDescription"])
 
         # nothing to update
         if not clause:
-            raise ValueError('No fields to update specified!')
+            raise ValueError("No fields to update specified!")
 
-        clause = ', '.join(clause)
+        clause = ", ".join(clause)
         if record_type == ArchivistsToolkitClient.RESOURCE:
-            db_type = 'Resources'
-            db_id_field = 'resourceId'
+            db_type = "Resources"
+            db_id_field = "resourceId"
         else:
-            db_type = 'ResourcesComponents'
-            db_id_field = 'resourceComponentId'
+            db_type = "ResourcesComponents"
+            db_id_field = "resourceComponentId"
         sql = "UPDATE {} SET {} WHERE {}=%s".format(db_type, clause, db_id_field)
         cursor = self.db.cursor()
         cursor.execute(sql, tuple(values))
@@ -92,7 +98,7 @@ class ArchivistsToolkitClient(object):
         """
         Returns an array of all levels of description defined in this Archivist's Toolkit instance.
         """
-        if not hasattr(self, 'levels_of_description'):
+        if not hasattr(self, "levels_of_description"):
             cursor = self.db.cursor()
             levels = set()
             cursor.execute("SELECT distinct(resourceLevel) FROM Resources")
@@ -105,7 +111,7 @@ class ArchivistsToolkitClient(object):
 
         return self.levels_of_description
 
-    def collection_list(self, resource_id, resource_type='collection'):
+    def collection_list(self, resource_id, resource_type="collection"):
         """
         Fetches a list of all resource and component IDs within the specified resource.
 
@@ -119,16 +125,22 @@ class ArchivistsToolkitClient(object):
         ret = []
 
         cursor = self.db.cursor()
-        if resource_type == 'collection':
-            cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s", (resource_id))
+        if resource_type == "collection":
+            cursor.execute(
+                "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s",
+                (resource_id),
+            )
         else:
             ret.append(resource_id)
-            cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s", (resource_id))
+            cursor.execute(
+                "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s",
+                (resource_id),
+            )
 
         rows = cursor.fetchall()
         if len(rows):
             for row in rows:
-                ret.extend(self.collection_list(row[0], 'description'))
+                ret.extend(self.collection_list(row[0], "description"))
 
         return ret
 
@@ -140,9 +152,13 @@ class ArchivistsToolkitClient(object):
 
         :param long resource_component_id: The ID of the resource component from which to fetch metadata.
         """
-        return self.get_resource_component_and_children(resource_component_id, 'resource')
+        return self.get_resource_component_and_children(
+            resource_component_id, "resource"
+        )
 
-    def get_resource_component_and_children(self, resource_id, resource_type='collection', level=1, sort_data={}, **kwargs):
+    def get_resource_component_and_children(
+        self, resource_id, resource_type="collection", level=1, sort_data={}, **kwargs
+    ):
         """
         Fetch detailed metadata for the specified resource_id and all of its children.
 
@@ -220,83 +236,98 @@ class ArchivistsToolkitClient(object):
         # we pass the sort position as a dict so it passes by reference and we
         # can use it to share state during recursion
 
-        recurse_max_level = kwargs.get('recurse_max_level', False)
-        query = kwargs.get('search_pattern', '')
+        recurse_max_level = kwargs.get("recurse_max_level", False)
+        query = kwargs.get("search_pattern", "")
 
         # intialize sort position if this is the beginning of recursion
         if level == 1:
-            sort_data['position'] = 0
+            sort_data["position"] = 0
 
-        sort_data['position'] = sort_data['position'] + 1
+        sort_data["position"] = sort_data["position"] + 1
 
         resource_data = {}
 
         cursor = self.db.cursor()
 
-        if resource_type == 'collection':
-            cursor.execute("SELECT title, dateExpression, resourceIdentifier1, resourceLevel FROM Resources WHERE resourceid=%s", (resource_id))
+        if resource_type == "collection":
+            cursor.execute(
+                "SELECT title, dateExpression, resourceIdentifier1, resourceLevel FROM Resources WHERE resourceid=%s",
+                (resource_id),
+            )
 
             for row in cursor.fetchall():
-                resource_data['id'] = resource_id
-                resource_data['type'] = 'resource'
-                resource_data['sortPosition'] = sort_data['position']
-                resource_data['title'] = row[0]
+                resource_data["id"] = resource_id
+                resource_data["type"] = "resource"
+                resource_data["sortPosition"] = sort_data["position"]
+                resource_data["title"] = row[0]
                 # TODO reformat dates from the separate date fields, like ArchivesSpaceClient?
-                resource_data['dates'] = row[1]
-                resource_data['date_expression'] = row[1]
-                resource_data['identifier'] = row[2]
-                resource_data['levelOfDescription'] = row[3]
+                resource_data["dates"] = row[1]
+                resource_data["date_expression"] = row[1]
+                resource_data["identifier"] = row[2]
+                resource_data["levelOfDescription"] = row[3]
         else:
-            cursor.execute("SELECT title, dateExpression, persistentID, resourceLevel FROM ResourcesComponents WHERE resourceComponentId=%s", (resource_id))
+            cursor.execute(
+                "SELECT title, dateExpression, persistentID, resourceLevel FROM ResourcesComponents WHERE resourceComponentId=%s",
+                (resource_id),
+            )
 
             for row in cursor.fetchall():
-                resource_data['id'] = resource_id
-                resource_data['type'] = 'resource_component'
-                resource_data['sortPosition'] = sort_data['position']
-                resource_data['title'] = row[0]
-                resource_data['dates'] = row[1]
-                resource_data['date_expression'] = row[1]
-                resource_data['identifier'] = row[2]
-                resource_data['levelOfDescription'] = row[3]
+                resource_data["id"] = resource_id
+                resource_data["type"] = "resource_component"
+                resource_data["sortPosition"] = sort_data["position"]
+                resource_data["title"] = row[0]
+                resource_data["dates"] = row[1]
+                resource_data["date_expression"] = row[1]
+                resource_data["identifier"] = row[2]
+                resource_data["levelOfDescription"] = row[3]
 
         # fetch children if we haven't reached the maximum recursion level
-        if resource_type == 'collection':
-            if query == '':
-                cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC", (resource_id))
+        if resource_type == "collection":
+            if query == "":
+                cursor.execute(
+                    "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC",
+                    (resource_id),
+                )
             else:
-                cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s AND (title LIKE %s OR persistentID LIKE %s) ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC", (resource_id, '%' + query + '%', '%' + query + '%'))
+                cursor.execute(
+                    "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId IS NULL AND resourceId=%s AND (title LIKE %s OR persistentID LIKE %s) ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC",
+                    (resource_id, "%" + query + "%", "%" + query + "%"),
+                )
         else:
-            if query == '':
-                cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC", (resource_id))
+            if query == "":
+                cursor.execute(
+                    "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC",
+                    (resource_id),
+                )
             else:
-                cursor.execute("SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s AND (title LIKE %s OR persistentID LIKE %s) ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC", (resource_id, '%' + query + '%', '%' + query + '%'))
+                cursor.execute(
+                    "SELECT resourceComponentId FROM ResourcesComponents WHERE parentResourceComponentId=%s AND (title LIKE %s OR persistentID LIKE %s) ORDER BY FIND_IN_SET(resourceLevel, 'subseries,file'), title ASC",
+                    (resource_id, "%" + query + "%", "%" + query + "%"),
+                )
 
         rows = cursor.fetchall()
 
         if (not recurse_max_level) or level < recurse_max_level:
             if len(rows):
-                resource_data['children'] = []
-                resource_data['has_children'] = True
+                resource_data["children"] = []
+                resource_data["has_children"] = True
 
                 for row in rows:
-                    resource_data['children'].append(
+                    resource_data["children"].append(
                         self.get_resource_component_and_children(
-                            row[0],
-                            'description',
-                            level + 1,
-                            sort_data
+                            row[0], "description", level + 1, sort_data
                         )
                     )
         else:
             if len(rows):
-                resource_data['children'] = []
-                resource_data['has_children'] = True
+                resource_data["children"] = []
+                resource_data["has_children"] = True
             else:
-                resource_data['children'] = False
-                resource_data['has_children'] = False
+                resource_data["children"] = False
+                resource_data["has_children"] = False
 
         # TODO: implement fetching notes
-        resource_data['notes'] = []
+        resource_data["notes"] = []
 
         return resource_data
 
@@ -338,9 +369,14 @@ class ArchivistsToolkitClient(object):
         if count > 0:
             return (ArchivistsToolkitClient.RESOURCE_COMPONENT, cursor.fetchone())
 
-        return (ArchivistsToolkitClient.RESOURCE, self.find_resource_id_for_component(component_id))
+        return (
+            ArchivistsToolkitClient.RESOURCE,
+            self.find_resource_id_for_component(component_id),
+        )
 
-    def find_collection_ids(self, search_pattern='', identifier='', page=None, page_size=30):
+    def find_collection_ids(
+        self, search_pattern="", identifier="", page=None, page_size=30
+    ):
         """
         Fetches a list of all resource IDs for every resource in the database.
 
@@ -358,24 +394,26 @@ class ArchivistsToolkitClient(object):
         """
         cursor = self.db.cursor()
 
-        if search_pattern == '' and identifier == '':
+        if search_pattern == "" and identifier == "":
             sql = "SELECT resourceId FROM Resources ORDER BY title"
             params = ()
         else:
-            clause = 'resourceid LIKE %s'
-            params = ['%' + search_pattern + '%']
+            clause = "resourceid LIKE %s"
+            params = ["%" + search_pattern + "%"]
 
-            if search_pattern != '':
-                clause = 'title LIKE %s OR' + clause
-                params.insert(0, '%' + search_pattern + '%')
+            if search_pattern != "":
+                clause = "title LIKE %s OR" + clause
+                params.insert(0, "%" + search_pattern + "%")
 
-            if identifier != '':
-                clause = 'resourceIdentifier1 LIKE %s OR ' + clause
-                params.insert(0, '%' + identifier + '%')
+            if identifier != "":
+                clause = "resourceIdentifier1 LIKE %s OR " + clause
+                params.insert(0, "%" + identifier + "%")
 
             params = tuple(params)
 
-            sql = "SELECT resourceId FROM Resources WHERE ({}) AND resourceLevel in ('recordgrp', 'collection') ORDER BY title".format(clause)
+            sql = "SELECT resourceId FROM Resources WHERE ({}) AND resourceLevel in ('recordgrp', 'collection') ORDER BY title".format(
+                clause
+            )
 
         if page is not None:
             start = (page - 1) * page_size
@@ -409,33 +447,65 @@ class ArchivistsToolkitClient(object):
 
     def _query_table(self, cursor, sql, resource_id, is_resource=True):
         if is_resource:
-            table = 'Resources'
-            id_column = 'resourceId'
+            table = "Resources"
+            id_column = "resourceId"
         else:
-            table = 'ResourcesComponents'
-            id_column = 'resourceComponentId'
+            table = "ResourcesComponents"
+            id_column = "resourceComponentId"
         cursor.execute(sql.format(table, id_column), (resource_id,))
         return cursor.fetchone()
 
     def _fetch_dates(self, cursor, resource_id, is_resource=True):
-        return self._query_table(cursor, "SELECT dateBegin, dateEnd, dateExpression FROM {} WHERE {}=%s", resource_id, is_resource=is_resource)
+        return self._query_table(
+            cursor,
+            "SELECT dateBegin, dateEnd, dateExpression FROM {} WHERE {}=%s",
+            resource_id,
+            is_resource=is_resource,
+        )
 
     def _fetch_title(self, cursor, resource_id, is_resource=True):
-        return self._query_table(cursor, "SELECT title FROM {} WHERE {}=%s", resource_id, is_resource=is_resource)
+        return self._query_table(
+            cursor,
+            "SELECT title FROM {} WHERE {}=%s",
+            resource_id,
+            is_resource=is_resource,
+        )
 
-    def add_digital_object(self, parent_archival_object, identifier, title="", uri=None, location_of_originals=None, object_type="text", xlink_show="embed", xlink_actuate="onLoad", restricted=False, use_statement="", use_conditions=None, access_conditions=None, size=None, format_name=None, format_version=None, inherit_dates=False):
+    def add_digital_object(
+        self,
+        parent_archival_object,
+        identifier,
+        title="",
+        uri=None,
+        location_of_originals=None,
+        object_type="text",
+        xlink_show="embed",
+        xlink_actuate="onLoad",
+        restricted=False,
+        use_statement="",
+        use_conditions=None,
+        access_conditions=None,
+        size=None,
+        format_name=None,
+        format_version=None,
+        inherit_dates=False,
+    ):
         cursor = self.db.cursor()
         time_now = strftime("%Y-%m-%d %H:%M:%S", localtime())
 
-        is_resource = self.resource_type(parent_archival_object) == 'resource'
+        is_resource = self.resource_type(parent_archival_object) == "resource"
 
-        cursor.execute("SELECT MAX(archDescriptionInstancesId) FROM ArchDescriptionInstances")
+        cursor.execute(
+            "SELECT MAX(archDescriptionInstancesId) FROM ArchDescriptionInstances"
+        )
         archdesc_id = cursor.fetchone()[0] + 1
         cursor.execute("SELECT repositoryId FROM Repositories")
         repo_id = cursor.fetchone()[0]
         cursor.execute("SELECT MAX(fileVersionId) FROM FileVersions")
         file_version_id = cursor.fetchone()[0] + 1
-        cursor.execute("SELECT MAX(archdescriptionrepeatingdataId) FROM ArchDescriptionRepeatingData")
+        cursor.execute(
+            "SELECT MAX(archdescriptionrepeatingdataId) FROM ArchDescriptionRepeatingData"
+        )
         new_desc_repeat_id = cursor.fetchone()[0] + 1
 
         if is_resource:
@@ -445,13 +515,17 @@ class ArchivistsToolkitClient(object):
         cursor.execute(sql, (archdesc_id, parent_archival_object))
 
         if inherit_dates:
-            start_date, end_date, date_expression = self._fetch_dates(cursor, parent_archival_object, is_resource=is_resource)
+            start_date, end_date, date_expression = self._fetch_dates(
+                cursor, parent_archival_object, is_resource=is_resource
+            )
         else:
             start_date = end_date = date_expression = None
 
         if not title:
-            filename = os.path.basename(uri) if uri is not None else 'Untitled'
-            title, = self._fetch_title(cursor, parent_archival_object, is_resource=is_resource)
+            filename = os.path.basename(uri) if uri is not None else "Untitled"
+            title, = self._fetch_title(
+                cursor, parent_archival_object, is_resource=is_resource
+            )
             title = title or filename
 
         sql = """INSERT INTO DigitalObjects
@@ -460,12 +534,46 @@ class ArchivistsToolkitClient(object):
             `eadDaoActuate`,`eadDaoShow`,`metsIdentifier`,`objectType`,`label`,
             `objectOrder`,`archDescriptionInstancesId`,`repositoryId`)
             VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, 'English', %s, %s, %s, %s, %s,' ',  0, %s, %s)"""
-        cursor.execute(sql, (time_now, time_now, self.user, self.user, title, date_expression, start_date, end_date, int(restricted), xlink_actuate, xlink_show, identifier, object_type, archdesc_id, repo_id))
+        cursor.execute(
+            sql,
+            (
+                time_now,
+                time_now,
+                self.user,
+                self.user,
+                title,
+                date_expression,
+                start_date,
+                end_date,
+                int(restricted),
+                xlink_actuate,
+                xlink_show,
+                identifier,
+                object_type,
+                archdesc_id,
+                repo_id,
+            ),
+        )
         do_id = cursor.lastrowid
 
         sql = """INSERT INTO FileVersions (fileVersionId, version, lastUpdated, created, lastUpdatedBy, createdBy, uri, useStatement, sequenceNumber, eadDaoActuate,eadDaoShow, digitalObjectId)
             VALUES (%s, 1, %s, %s, %s, %s, %s, %s, 0, %s, %s, %s)"""
-        cursor.execute(sql, (file_version_id, time_now, time_now, self.user, self.user, uri, use_statement, 0, xlink_actuate, xlink_show, do_id))
+        cursor.execute(
+            sql,
+            (
+                file_version_id,
+                time_now,
+                time_now,
+                self.user,
+                self.user,
+                uri,
+                use_statement,
+                0,
+                xlink_actuate,
+                xlink_show,
+                do_id,
+            ),
+        )
 
         seq_num = 0
         sql = """INSERT INTO ArchDescriptionRepeatingData
@@ -474,28 +582,81 @@ class ArchivistsToolkitClient(object):
             VALUES (%s, 'note', 0, %s, %s, %s, %s, 'Note', '', %s, '', %s, %s, %s, '', '', '')"""
         # existence and location of originals note
         if location_of_originals is not None:
-            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, location_of_originals, 13))
+            cursor.execute(
+                sql,
+                (
+                    new_desc_repeat_id,
+                    time_now,
+                    time_now,
+                    self.user,
+                    self.user,
+                    seq_num,
+                    do_id,
+                    location_of_originals,
+                    13,
+                ),
+            )
             new_desc_repeat_id += 1
             seq_num += 1
 
         # conditions governing access note
         if access_conditions is not None:
-            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, access_conditions, 8))
+            cursor.execute(
+                sql,
+                (
+                    new_desc_repeat_id,
+                    time_now,
+                    time_now,
+                    self.user,
+                    self.user,
+                    seq_num,
+                    do_id,
+                    access_conditions,
+                    8,
+                ),
+            )
             new_desc_repeat_id += 1
             seq_num += 1
 
         # conditions governing use note
         if use_conditions is not None:
-            cursor.execute(sql, (new_desc_repeat_id, time_now, time_now, self.user, self.user, seq_num, do_id, use_conditions, 9))
+            cursor.execute(
+                sql,
+                (
+                    new_desc_repeat_id,
+                    time_now,
+                    time_now,
+                    self.user,
+                    self.user,
+                    seq_num,
+                    do_id,
+                    use_conditions,
+                    9,
+                ),
+            )
 
-    def add_digital_object_component(self, parent_digital_object, parent_digital_object_component=None, label=None, title=None):
-        raise NotImplementedError("Archivist's Toolkit does not have digital object components")
+    def add_digital_object_component(
+        self,
+        parent_digital_object,
+        parent_digital_object_component=None,
+        label=None,
+        title=None,
+    ):
+        raise NotImplementedError(
+            "Archivist's Toolkit does not have digital object components"
+        )
 
-    def count_collections(self, search_pattern='', identifier=''):
+    def count_collections(self, search_pattern="", identifier=""):
         return len(self.find_collection_ids(search_pattern, identifier))
 
-    def find_collections(self, search_pattern='', identifier='', page=1, page_size=30):
-        return self.augment_resource_ids(self.find_collection_ids(search_pattern, identifier, page=page, page_size=page_size))
+    def find_collections(self, search_pattern="", identifier="", page=1, page_size=30):
+        return self.augment_resource_ids(
+            self.find_collection_ids(
+                search_pattern, identifier, page=page, page_size=page_size
+            )
+        )
 
     def delete_record(self, record_id):
-        raise NotImplementedError("ArchivistsToolkitClient does not currently implement deleting records.")
+        raise NotImplementedError(
+            "ArchivistsToolkitClient does not currently implement deleting records."
+        )
