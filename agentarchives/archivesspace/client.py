@@ -148,11 +148,13 @@ class ArchivesSpaceClient(object):
         meaning the session timeouts in 604800 seconds (a week) of inactivity.
         """
         try:
-            self._post('/logout')
+            self._post(self.base_url + "/logout")
             self.session.close()
             self.session = None
         except requests.ConnectionError as e:
-            raise ConnectionError("Unable to logout from ArchivesSpace server: " + str(e))
+            raise ConnectionError(
+                "Unable to logout from ArchivesSpace server: " + str(e)
+            )
 
     def _request(self, method, url, params, expected_response, data=None):
         if not url.startswith("/"):
