@@ -148,7 +148,7 @@ class ArchivesSpaceClient(object):
         meaning the session timeouts in 604800 seconds (a week) of inactivity.
         """
         try:
-            self._post("/logout")
+            self._post("logout")
             self.session.close()
             self.session = None
         except requests.ConnectionError as e:
