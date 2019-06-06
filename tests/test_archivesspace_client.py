@@ -57,6 +57,13 @@ def test_base_url_config(mocker, params, raises, base_url):
     assert client.base_url == base_url, "Failed with params: {}".format(params)
 
 
+@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_client_logout.yaml"))
+def test_logout():
+    client = ArchivesSpaceClient(**AUTH)
+    client.logout()
+    assert client.session is None
+
+
 @vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_listing_collections.yaml"))
 def test_listing_collections():
     client = ArchivesSpaceClient(**AUTH)
