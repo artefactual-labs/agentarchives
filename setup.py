@@ -7,7 +7,7 @@ setup(
     author="Artefactual Systems",
     author_email="info@artefactual.com",
     license="AGPL 3",
-    version="0.6.0",
+    version="0.7.0",
     packages=[
         "agentarchives",
         "agentarchives.archivesspace",

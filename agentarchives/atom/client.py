@@ -635,6 +635,8 @@ class AtomClient(object):
         aip_uuid=None,
         inherit_dates=False,
         usage=None,
+        aip_name=None,
+        relative_path_within_aip=None,
     ):
         """ Creates a new digital object. """
 
@@ -659,6 +661,10 @@ class AtomClient(object):
             new_object["file_uuid"] = file_uuid
         if aip_uuid is not None:
             new_object["aip_uuid"] = aip_uuid
+        if aip_name is not None:
+            new_object["aip_name"] = aip_name
+        if relative_path_within_aip is not None:
+            new_object["relative_path_within_aip"] = relative_path_within_aip
 
         if format_name is not None:
             new_object["format_name"] = format_name
