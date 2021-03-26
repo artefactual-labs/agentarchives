@@ -1,4 +1,6 @@
-[![PyPI version](https://img.shields.io/pypi/v/agentarchives.svg)](https://pypi.python.org/pypi/agentarchives) [![Build status](https://travis-ci.org/artefactual-labs/agentarchives.svg?branch=master)](https://travis-ci.org/artefactual-labs/agentarchives)
+[![PyPI version](https://img.shields.io/pypi/v/agentarchives.svg)](https://pypi.python.org/pypi/agentarchives)
+[![GitHub CI](https://github.com/artefactual-labs/agentarchives/actions/workflows/test.yml/badge.svg)](https://github.com/artefactual-labs/agentarchives/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/artefactual-labs/agentarchives/branch/master/graph/badge.svg?token=rNmMA59AqJ)](https://codecov.io/gh/artefactual-labs/agentarchives)
 
 # agentarchives
 
