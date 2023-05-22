@@ -424,7 +424,7 @@ class ArchivistsToolkitClient(object):
         return [r[0] for r in cursor]
 
     def find_by_id(self, object_type, field, value):
-        """ Find resource by a specific ID. """
+        """Find resource by a specific ID."""
         raise NotImplementedError("Archivist's Toolkit does not implement find_by_id")
 
     def augment_resource_ids(self, resource_ids):
@@ -523,7 +523,7 @@ class ArchivistsToolkitClient(object):
 
         if not title:
             filename = os.path.basename(uri) if uri is not None else "Untitled"
-            title, = self._fetch_title(
+            (title,) = self._fetch_title(
                 cursor, parent_archival_object, is_resource=is_resource
             )
             title = title or filename

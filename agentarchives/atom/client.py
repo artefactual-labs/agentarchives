@@ -588,7 +588,7 @@ class AtomClient(object):
         return [format_record(r) for r in hits["results"]]
 
     def find_by_id(self, object_type, field, value):
-        """ Find resource by a specific ID. """
+        """Find resource by a specific ID."""
         raise NotImplementedError("AtoM does not implement find_by_id")
 
     def augment_resource_ids(self, resource_ids):
@@ -638,7 +638,7 @@ class AtomClient(object):
         aip_name=None,
         relative_path_within_aip=None,
     ):
-        """ Creates a new digital object. """
+        """Creates a new digital object."""
 
         new_object = {"information_object_slug": information_object_slug}
 
@@ -690,7 +690,7 @@ class AtomClient(object):
         label=None,
         title=None,
     ):
-        """ Creates a new digital object component. """
+        """Creates a new digital object component."""
         raise NotImplementedError(
             "add_digital_object_component not yet implemented in AtoM client"
         )
