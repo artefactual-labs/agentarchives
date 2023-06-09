@@ -14,7 +14,7 @@ setup(
         "agentarchives.archivists_toolkit",
         "agentarchives.atom",
     ],
-    install_requires=["requests>=2,<3", "mysqlclient>=1.3,<2"],
+    install_requires=["requests>=2,<3", "mysqlclient>=1.4,<2"],
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4 - Beta",
