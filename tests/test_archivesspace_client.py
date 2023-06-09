@@ -1,16 +1,12 @@
-# -*- coding: UTF-8 -*-
-import os
-
 import collections
+import os
 
 import pytest
 import vcr
 
-from agentarchives.archivesspace.client import (
-    ArchivesSpaceClient,
-    ArchivesSpaceError,
-    CommunicationError,
-)
+from agentarchives.archivesspace.client import ArchivesSpaceClient
+from agentarchives.archivesspace.client import ArchivesSpaceError
+from agentarchives.archivesspace.client import CommunicationError
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -54,7 +50,7 @@ def test_base_url_config(mocker, params, raises, base_url):
         return
     mocker.patch("agentarchives.archivesspace.ArchivesSpaceClient._login")
     client = ArchivesSpaceClient(**kwargs)
-    assert client.base_url == base_url, "Failed with params: {}".format(params)
+    assert client.base_url == base_url, f"Failed with params: {params}"
 
 
 @vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_client_logout.yaml"))

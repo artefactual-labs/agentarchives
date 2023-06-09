@@ -1,6 +1,7 @@
 import logging
 import os
-from time import localtime, strftime
+from time import localtime
+from time import strftime
 
 import MySQLdb
 
@@ -16,7 +17,7 @@ class ArchivistsToolkitError(Exception):
     pass
 
 
-class ArchivistsToolkitClient(object):
+class ArchivistsToolkitClient:
     RESOURCE = "resource"
     RESOURCE_COMPONENT = "resource_component"
 
@@ -90,7 +91,7 @@ class ArchivistsToolkitClient(object):
         else:
             db_type = "ResourcesComponents"
             db_id_field = "resourceComponentId"
-        sql = "UPDATE {} SET {} WHERE {}=%s".format(db_type, clause, db_id_field)
+        sql = f"UPDATE {db_type} SET {clause} WHERE {db_id_field}=%s"
         cursor = self.db.cursor()
         cursor.execute(sql, tuple(values))
 
@@ -417,7 +418,7 @@ class ArchivistsToolkitClient(object):
 
         if page is not None:
             start = (page - 1) * page_size
-            sql = sql + " LIMIT {},{}".format(start, page_size)
+            sql = sql + f" LIMIT {start},{page_size}"
 
         cursor.execute(sql, params)
 
