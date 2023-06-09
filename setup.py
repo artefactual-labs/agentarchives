@@ -7,7 +7,7 @@ setup(
     author="Artefactual Systems",
     author_email="info@artefactual.com",
     license="AGPL 3",
-    version="0.7.0",
+    version="0.8.0",
     packages=[
         "agentarchives",
         "agentarchives.archivesspace",
@@ -15,12 +15,10 @@ setup(
         "agentarchives.atom",
     ],
     install_requires=["requests>=2,<3", "mysqlclient>=1.3,<2"],
-    python_requires=">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*",
+    python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: GNU Affero General Public License v3",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
