@@ -1,10 +1,10 @@
-# -*- coding: UTF-8 -*-
 import os
 
 import pytest
 import vcr
 
-from agentarchives.atom.client import AtomClient, CommunicationError
+from agentarchives.atom.client import AtomClient
+from agentarchives.atom.client import CommunicationError
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {"url": "http://127.0.0.1/index.php", "key": "68405800c6612599"}
@@ -17,14 +17,14 @@ def test_levels_of_description():
     client = AtomClient(**AUTH)
     levels = client.get_levels_of_description()
     assert levels == [
-        u"Collection",
-        u"File",
-        u"Fonds",
-        u"Item",
-        u"Part",
-        u"Series",
-        u"Subfonds",
-        u"Subseries",
+        "Collection",
+        "File",
+        "Fonds",
+        "Item",
+        "Part",
+        "Series",
+        "Subfonds",
+        "Subseries",
     ]
 
 
@@ -184,7 +184,7 @@ def test_find_resource_component_children_at_max_recursion_level():
 def test_find_collection_ids():
     client = AtomClient(**AUTH)
     ids = client.find_collection_ids()
-    assert ids == [u"top-level-fonds", u"test-fonds"]
+    assert ids == ["top-level-fonds", "test-fonds"]
 
 
 @vcr.use_cassette(

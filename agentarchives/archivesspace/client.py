@@ -2,12 +2,9 @@ import json
 import logging
 import os
 import re
-import requests
+from urllib.parse import urlparse
 
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
+import requests
 
 from .. import DEFAULT_TIMEOUT
 
@@ -35,12 +32,12 @@ class AuthenticationError(ArchivesSpaceError):
 
 class CommunicationError(ArchivesSpaceError):
     def __init__(self, status_code, response):
-        message = "ArchivesSpace server responded {}".format(status_code)
+        message = f"ArchivesSpace server responded {status_code}"
         self.response = response
-        super(CommunicationError, self).__init__(message)
+        super().__init__(message)
 
 
-class ArchivesSpaceClient(object):
+class ArchivesSpaceClient:
     """
     Client to communicate with a remote ArchivesSpace installation using its backend API.
 
@@ -80,7 +77,7 @@ class ArchivesSpaceClient(object):
         self.timeout = timeout
         self.user = user
         self.passwd = passwd
-        self.repository = "/repositories/{}".format(repository)
+        self.repository = f"/repositories/{repository}"
         self._login()
 
     def _build_base_url(self, host, port):
@@ -95,7 +92,7 @@ class ArchivesSpaceClient(object):
             parsed = parsed._replace(path="")
             netloc, parts = host, host.partition(":")
             if parts[1] == "" and port is not None:
-                netloc = "{}:{}".format(parts[0], port)
+                netloc = f"{parts[0]}:{port}"
             parsed = parsed._replace(netloc=netloc)
         parsed = parsed._replace(path=parsed.path.rstrip("/"))
         return parsed.geturl()
@@ -301,7 +298,7 @@ class ArchivesSpaceClient(object):
             return "resource" if type_ == "resources" else "resource_component"
         else:
             raise ArchivesSpaceError(
-                "Unable to determine type of provided ID: {}".format(resource_id)
+                f"Unable to determine type of provided ID: {resource_id}"
             )
 
     def get_record(self, record_id):
@@ -427,7 +424,7 @@ class ArchivesSpaceClient(object):
 
     def _format_dates(self, start, end=None):
         if end is not None:
-            return "{}-{}".format(start, end)
+            return f"{start}-{end}"
         else:
             return start
 
@@ -557,7 +554,7 @@ class ArchivesSpaceClient(object):
         sort_data={},
         recurse_max_level=False,
         sort_by=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Fetch detailed metadata for the specified resource_id and all of its children.
@@ -636,11 +633,11 @@ class ArchivesSpaceClient(object):
 
         if search_pattern != "":
             search_pattern = self._escape_solr_query(search_pattern, field="title")
-            params["q"] = params["q"] + " AND title:{}".format(search_pattern)
+            params["q"] = params["q"] + f" AND title:{search_pattern}"
 
         if identifier != "":
             identifier = self._escape_solr_query(identifier, field="identifier")
-            params["q"] = params["q"] + " AND identifier:{}".format(identifier)
+            params["q"] = params["q"] + f" AND identifier:{identifier}"
 
         response = self._get(self.repository + "/search", params=params)
         hits = response.json()
@@ -658,10 +655,10 @@ class ArchivesSpaceClient(object):
         params = {"page": 1, "q": "primary_type:resource"}
 
         if search_pattern != "":
-            params["q"] = params["q"] + " AND title:{}".format(search_pattern)
+            params["q"] = params["q"] + f" AND title:{search_pattern}"
 
         if identifier != "":
-            params["q"] = params["q"] + " AND identifier:{}".format(identifier)
+            params["q"] = params["q"] + f" AND identifier:{identifier}"
 
         return self._get(self.repository + "/search", params=params).json()[
             "total_hits"
@@ -725,11 +722,11 @@ class ArchivesSpaceClient(object):
 
         if search_pattern != "":
             search_pattern = self._escape_solr_query(search_pattern, field="title")
-            params["q"] = params["q"] + " AND title:{}".format(search_pattern)
+            params["q"] = params["q"] + f" AND title:{search_pattern}"
 
         if identifier != "":
             identifier = self._escape_solr_query(identifier, field="identifier")
-            params["q"] = params["q"] + " AND identifier:{}".format(identifier)
+            params["q"] = params["q"] + f" AND identifier:{identifier}"
 
         if sort_by is not None:
             params["sort"] = "title_sort " + sort_by

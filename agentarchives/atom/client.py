@@ -1,12 +1,9 @@
 import json
 import logging
 import re
-import requests
+from urllib.parse import urljoin
 
-try:
-    from urlparse import urljoin
-except ImportError:
-    from urllib.parse import urljoin
+import requests
 
 from .. import DEFAULT_TIMEOUT
 
@@ -33,10 +30,10 @@ class CommunicationError(AtomError):
             status_code, response.url
         )
         self.response = response
-        super(CommunicationError, self).__init__(message)
+        super().__init__(message)
 
 
-class AtomClient(object):
+class AtomClient:
     """
     Client to communicate with a remote AtoM installation using its backend API.
 
@@ -159,7 +156,7 @@ class AtomClient(object):
 
     def get_record(self, record_id):
         record = self._get(
-            urljoin(self.base_url, "informationobjects/{}".format(record_id))
+            urljoin(self.base_url, f"informationobjects/{record_id}")
         ).json()
         if "dates" in record:
             for date in record["dates"]:
@@ -259,7 +256,7 @@ class AtomClient(object):
             raise ValueError("No fields to update specified!")
 
         self._put(
-            urljoin(self.base_url, "informationobjects/{}".format(record_id)),
+            urljoin(self.base_url, f"informationobjects/{record_id}"),
             data=json.dumps(record),
         )
 
@@ -298,7 +295,7 @@ class AtomClient(object):
             return results
 
         response = self._get(
-            urljoin(self.base_url, "informationobjects/tree/{}".format(resource_id))
+            urljoin(self.base_url, f"informationobjects/tree/{resource_id}")
         )
         tree = response.json()
         return fetch_children(tree["children"])
@@ -362,7 +359,7 @@ class AtomClient(object):
             return result
 
         response = self._get(
-            urljoin(self.base_url, "informationobjects/tree/{}".format(resource_id))
+            urljoin(self.base_url, f"informationobjects/tree/{resource_id}")
         )
         tree = response.json()
         return format_record(tree, 1)
@@ -375,7 +372,7 @@ class AtomClient(object):
         sort_data={},
         recurse_max_level=False,
         sort_by=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Fetch detailed metadata for the specified resource_id and all of its children.
@@ -396,7 +393,7 @@ class AtomClient(object):
 
     def _format_dates(self, start, end=None):
         if end is not None:
-            return "{}-{}".format(start, end)
+            return f"{start}-{end}"
         else:
             return start
 
@@ -757,7 +754,7 @@ class AtomClient(object):
         Delete a record with record_id.
         """
         self._delete(
-            urljoin(self.base_url, "informationobjects/{}".format(record_id)),
+            urljoin(self.base_url, f"informationobjects/{record_id}"),
             expected_response=204,
         )
         return {"status": "Deleted"}
