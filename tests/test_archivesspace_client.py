@@ -18,6 +18,7 @@ AUTH = {"host": "http://localhost:8089", "user": "admin", "passwd": "admin"}
     [
         # These are pairs that we don't like and we raise.
         ({"host": "", "port": ""}, True, None),
+        ({"host": None, "port": None}, True, None),
         ({"host": "", "port": "string"}, True, None),
         ({"host": "string", "port": "string"}, True, None),
         # When `host` is not a URL.
@@ -26,6 +27,10 @@ AUTH = {"host": "http://localhost:8089", "user": "admin", "passwd": "admin"}
         ({"host": "localhost", "port": 12345}, False, "http://localhost:12345"),
         ({"host": "localhost", "port": "12345"}, False, "http://localhost:12345"),
         ({"host": "localhost", "port": None}, False, "http://localhost"),
+        ({"host": "localhost", "port": ""}, False, "http://localhost"),
+        ({"host": "foobar.tld", "port": ""}, False, "http://foobar.tld"),
+        ({"host": "foobar.tld", "port": None}, False, "http://foobar.tld"),
+        ({"host": "foobar.tld", "port": "12345"}, False, "http://foobar.tld:12345"),
         # When `host` is a URL!
         ({"host": "http://apiserver"}, False, "http://apiserver"),
         (
@@ -149,7 +154,7 @@ def test_find_resource_children():
     client = ArchivesSpaceClient(**AUTH)
     data = client.get_resource_component_and_children("/repositories/2/resources/1")
 
-    assert type(data) == dict
+    assert isinstance(data, dict)
     assert len(data["children"]) == 2
     assert data["has_children"] is True
     assert data["title"] == "Test fonds"
