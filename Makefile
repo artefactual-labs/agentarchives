@@ -7,7 +7,7 @@ package-source:
 	python setup.py sdist
 
 package-wheel: package-deps
-	python setup.py bdist_wheel --universal
+	python setup.py bdist_wheel
 
 package-upload: package-deps package-source package-wheel
 	twine upload dist/* --repository-url https://upload.pypi.org/legacy/
