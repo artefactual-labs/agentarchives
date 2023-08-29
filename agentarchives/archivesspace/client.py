@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+import sys
 from urllib.parse import urlparse
 
 import requests
@@ -87,11 +88,17 @@ class ArchivesSpaceClient:
         removed so it always need to be added by the consumer.
         """
         parsed = urlparse(host)
-        if not parsed.scheme:
+        # In some cases Python3.9+ may parse the host as the scheme.
+        # See https://bugs.python.org/issue27657
+        if not parsed.scheme or (
+            sys.version_info >= (3, 9)
+            and host.partition(":")[0] == parsed.scheme
+            and not parsed.netloc
+        ):
             parsed = parsed._replace(scheme="http")
             parsed = parsed._replace(path="")
             netloc, parts = host, host.partition(":")
-            if parts[1] == "" and port is not None:
+            if parts[1] == "" and port not in (None, ""):
                 netloc = f"{parts[0]}:{port}"
             parsed = parsed._replace(netloc=netloc)
         parsed = parsed._replace(path=parsed.path.rstrip("/"))

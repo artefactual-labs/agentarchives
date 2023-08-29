@@ -141,7 +141,7 @@ def test_find_resource_children():
     client = AtomClient(**AUTH)
     data = client.get_resource_component_and_children("test-fonds")
 
-    assert type(data) == dict
+    assert isinstance(data, dict)
     assert len(data["children"]) == 1
     assert data["has_children"] is True
     assert data["title"] == "Test fonds"
