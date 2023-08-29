@@ -1,8 +1,19 @@
+import codecs
+from os import path
+
 from setuptools import setup
+
+
+here = path.abspath(path.dirname(__file__))
+
+with codecs.open(path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
 
 setup(
     name="agentarchives",
     description="Clients to retrieve, add, and modify records from archival management systems",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/artefactual-labs/agentarchives",
     author="Artefactual Systems",
     author_email="info@artefactual.com",
