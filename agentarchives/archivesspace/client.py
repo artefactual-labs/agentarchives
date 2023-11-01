@@ -184,12 +184,16 @@ class ArchivesSpaceClient:
 
         return response
 
-    def _get(self, url, params={}, expected_response=200):
+    def _get(self, url, params=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.get, url, params=params, expected_response=expected_response
         )
 
-    def _put(self, url, params={}, data=None, expected_response=200):
+    def _put(self, url, params=None, data=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.put,
             url,
@@ -198,7 +202,9 @@ class ArchivesSpaceClient:
             expected_response=expected_response,
         )
 
-    def _post(self, url, params={}, data=None, expected_response=200):
+    def _post(self, url, params=None, data=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.post,
             url,
@@ -207,7 +213,9 @@ class ArchivesSpaceClient:
             expected_response=expected_response,
         )
 
-    def _delete(self, url, params={}, expected_response=200):
+    def _delete(self, url, params=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.delete, url, params=params, expected_response=expected_response
         )
@@ -558,7 +566,7 @@ class ArchivesSpaceClient:
         resource_id,
         resource_type="collection",
         level=1,
-        sort_data={},
+        sort_data=None,
         recurse_max_level=False,
         sort_by=None,
         **kwargs,
@@ -578,6 +586,8 @@ class ArchivesSpaceClient:
             Consult ArchivistsToolkitClient.get_resource_component_and_children for the output format.
         :rtype dict:
         """
+        if sort_data is None:
+            sort_data = {}
         resource_type = self.resource_type(resource_id)
         if resource_type == "resource":
             return self._get_resources(
@@ -1027,7 +1037,7 @@ class ArchivesSpaceClient:
         start_date="",
         end_date="",
         date_expression="",
-        notes=[],
+        notes=None,
     ):
         """
         Adds a new resource component parented within `parent`.
@@ -1038,6 +1048,8 @@ class ArchivesSpaceClient:
 
         :return: The ID of the newly-created record.
         """
+        if notes is None:
+            notes = []
         parent_record = self.get_record(parent)
         record_type = self.resource_type(parent)
         repository = parent_record["repository"]["ref"]

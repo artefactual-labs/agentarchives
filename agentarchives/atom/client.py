@@ -80,12 +80,16 @@ class AtomClient:
 
         return response
 
-    def _get(self, url, params={}, expected_response=200):
+    def _get(self, url, params=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.get, url, params=params, expected_response=expected_response
         )
 
-    def _put(self, url, params={}, data=None, expected_response=200):
+    def _put(self, url, params=None, data=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.put,
             url,
@@ -94,7 +98,9 @@ class AtomClient:
             expected_response=expected_response,
         )
 
-    def _post(self, url, params={}, data=None, expected_response=200):
+    def _post(self, url, params=None, data=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.post,
             url,
@@ -103,7 +109,9 @@ class AtomClient:
             expected_response=expected_response,
         )
 
-    def _delete(self, url, params={}, expected_response=200):
+    def _delete(self, url, params=None, expected_response=200):
+        if params is None:
+            params = {}
         return self._request(
             self.session.delete, url, params=params, expected_response=expected_response
         )
@@ -369,7 +377,7 @@ class AtomClient:
         resource_id,
         resource_type="collection",
         level=1,
-        sort_data={},
+        sort_data=None,
         recurse_max_level=False,
         sort_by=None,
         **kwargs,
@@ -387,6 +395,8 @@ class AtomClient:
             Consult ArchivistsToolkitClient.get_resource_component_and_children for the output format.
         :rtype dict:
         """
+        if sort_data is None:
+            sort_data = {}
         return self._get_resources(
             resource_id, recurse_max_level=recurse_max_level, sort_by=sort_by
         )
@@ -700,7 +710,7 @@ class AtomClient:
         start_date=None,
         end_date=None,
         date_expression=None,
-        notes=[],
+        notes=None,
     ):
         """
         Adds a new resource component parented within `parent`.
@@ -711,6 +721,8 @@ class AtomClient:
 
         :return: The ID of the newly-created record.
         """
+        if notes is None:
+            notes = []
 
         new_object = {"title": title, "level_of_description": level}
 

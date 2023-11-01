@@ -158,7 +158,7 @@ class ArchivistsToolkitClient:
         )
 
     def get_resource_component_and_children(
-        self, resource_id, resource_type="collection", level=1, sort_data={}, **kwargs
+        self, resource_id, resource_type="collection", level=1, sort_data=None, **kwargs
     ):
         """
         Fetch detailed metadata for the specified resource_id and all of its children.
@@ -234,9 +234,10 @@ class ArchivistsToolkitClient:
         }
         :rtype list:
         """
+        if sort_data is None:
+            sort_data = {}
         # we pass the sort position as a dict so it passes by reference and we
         # can use it to share state during recursion
-
         recurse_max_level = kwargs.get("recurse_max_level", False)
         query = kwargs.get("search_pattern", "")
 
