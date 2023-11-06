@@ -20,8 +20,8 @@ description = "Clients to retrieve, add, and modify records from archival manage
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 dependencies = [
-  "mysqlclient~=2.2",
-  "requests~=2.31",
+  "mysqlclient",
+  "requests",
 ]
 keywords = [
   "accesstomemory",
