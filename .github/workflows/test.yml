@@ -6,7 +6,7 @@ on:
     branches:
       - "master"
 jobs:
-  tox:
+  test:
     name: "Test Python ${{ matrix.python-version }}"
     runs-on: "ubuntu-22.04"
     strategy:
