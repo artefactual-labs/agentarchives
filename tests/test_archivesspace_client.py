@@ -2,6 +2,7 @@ import collections
 import os
 
 import pytest
+import requests
 import vcr
 
 from agentarchives.archivesspace.client import ArchivesSpaceClient
@@ -50,7 +51,7 @@ def test_base_url_config(mocker, params, raises, base_url):
     kwargs = {"user": "foo", "passwd": "bar"}
     kwargs.update(params)
     if raises:
-        with pytest.raises(Exception):
+        with pytest.raises((AttributeError, requests.exceptions.InvalidURL)):
             ArchivesSpaceClient(**kwargs)
         return
     mocker.patch("agentarchives.archivesspace.ArchivesSpaceClient._login")

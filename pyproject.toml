@@ -1,0 +1,108 @@
+[build-system]
+requires = [
+  "setuptools>=68",
+  "wheel>=0.41",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = [""]
+include = ["agentarchives*"]
+namespaces = false
+
+[project]
+name = "agentarchives"
+dynamic = [
+  "version",
+  "readme",
+]
+description = "Clients to retrieve, add, and modify records from archival management systems."
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+dependencies = [
+  "mysqlclient",
+  "requests",
+]
+keywords = [
+  "accesstomemory",
+  "archivematica",
+  "preservation",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+authors = [
+  {name = "Artefactual Systems Inc.", email = "info@artefactual.com"}
+]
+maintainers = [
+  {name = "Artefactual Systems Inc.", email = "info@artefactual.com"}
+]
+
+[project.urls]
+homepage = "https://github.com/artefactual-labs/agentarchives/"
+repository = "https://github.com/artefactual-labs/agentarchives/"
+issues = "https://github.com/archivematica/Issues/issues"
+
+[project.optional-dependencies]
+dev = [
+  "coverage",
+  "pip-tools",
+  "pytest-cov",
+  "pytest-mock",
+  "pytest",
+  "vcrpy",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "agentarchives.__version__"}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.pytest.ini_options]
+python_files = [
+  "test_*.py",
+]
+testpaths = [
+  "tests",
+]
+
+[tool.coverage.run]
+source = [
+  "agentarchives",
+]
+branch = true
+omit = [
+  "tests/*",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+    [tox]
+    envlist = py{38,39,310,311,312}, linting
+
+    [gh-actions]
+    python =
+        3.8: py38
+        3.9: py39
+        3.10: py310
+        3.11: py311
+        3.12: py312
+
+    [testenv]
+    deps = -r {toxinidir}/requirements-dev.txt
+    commands =  pytest {posargs}
+
+    [testenv:linting]
+    basepython = python3
+    deps = pre-commit
+    commands = pre-commit run --all-files --show-diff-on-failure
+"""
