@@ -1,8 +1,8 @@
+# agentarchives
+
 [![PyPI version](https://img.shields.io/pypi/v/agentarchives.svg)](https://pypi.python.org/pypi/agentarchives)
 [![GitHub CI](https://github.com/artefactual-labs/agentarchives/actions/workflows/test.yml/badge.svg)](https://github.com/artefactual-labs/agentarchives/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/artefactual-labs/agentarchives/branch/master/graph/badge.svg?token=rNmMA59AqJ)](https://codecov.io/gh/artefactual-labs/agentarchives)
-
-# agentarchives
 
 Clients to retrieve, add, and modify records from archival management systems.
 
@@ -17,9 +17,14 @@ Or you can install it directly from git
 `pip install git+https://github.com/artefactual-labs/agentarchives.git`
 
 ### Dependency issue on MacOs
-Agentarchvies depends on the [mysqlclient](https://pypi.org/project/mysqlclient/) package which has a [bug](https://bugs.mysql.com/bug.php?id=86971) which can possibly fail an install when using homebrew on MacOs computers. A solution suggested on the mysqlclient site is to change `mysql_config` on or about line 112:
 
-```
+Agentarchvies depends on the [mysqlclient](https://pypi.org/project/mysqlclient/)
+package which has a [bug](https://bugs.mysql.com/bug.php?id=86971) which can
+possibly fail an install when using homebrew on MacOs computers. A solution
+suggested on the mysqlclient site is to change `mysql_config` on or about line
+112:
+
+```text
 # Create options
 libs="-L$pkglibdir"
 libs="$libs -l "
@@ -27,7 +32,7 @@ libs="$libs -l "
 
 to
 
-```
+```text
 # Create options
 libs="-L$pkglibdir"
 libs="$libs -lmysqlclient -lssl -lcrypto"
@@ -48,16 +53,20 @@ First, you need to import the module in your Python script:
 from agentarchives import archivesspace
 ```
 
-Then, initiate a new client, passing in the URL, user name, password, port and repository for your AS instance:
+Then, initiate a new client, passing in the URL, user name, password, port and
+repository for your AS instance:
 
 ```python
 client = archivesspace.ArchivesSpaceClient('http://localhost', 'admin', 'admin', 8089, 2)
 ```
 
-Using your client, call one of the included functions (documented in `client.py`). For example, the following:
+Using your client, call one of the included functions (documented in `client.py`).
+For example, the following:
 
-    $ resource = client.get_record('/repositories/2/resources/1')
-    $ print resource
+```python
+    resource = client.get_record('/repositories/2/resources/1')
+    print resource
+```
 
 will return:
 
@@ -135,16 +144,20 @@ First, you need to import the module in your Python script:
 from agentarchives import atom
 ```
 
-Then, initiate a new client, passing in the URL, REST API access token, password, and port for your AtoM instance:
+Then, initiate a new client, passing in the URL, REST API access token, password,
+and port for your AtoM instance:
 
 ```python
 client = atom.AtomClient('http://localhost', '68405800c6612599', 80)
 ```
 
-Using your client, call one of the included functions (documented in `client.py`). For example, the following:
+Using your client, call one of the included functions (documented in `client.py`).
+For example, the following:
 
-    $ resource = client.get_record('test-fonds')
-    $ print resource
+```python
+    resource = client.get_record('test-fonds')
+    print resource
+```
 
 Will return:
 
@@ -171,6 +184,7 @@ Will return:
 ```
 
 Current AtoM client limitations (versus the ArchivesSpace client):
+
 * Identifier wildcard search not supported
 * Creation of multiple notes not supported
 * Nested digital objects not supported
