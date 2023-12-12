@@ -8,4 +8,3 @@ to learn how to contribute to agentarchives.
 
 Any information specific to the agentarchives project should be listed
 below.
-
