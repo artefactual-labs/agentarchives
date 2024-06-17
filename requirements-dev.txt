@@ -61,7 +61,7 @@ tomli==2.0.1
     #   coverage
     #   pip-tools
     #   pytest
-urllib3==1.26.18
+urllib3==1.26.19
     # via
     #   requests
     #   vcrpy
