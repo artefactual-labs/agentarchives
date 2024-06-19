@@ -6,13 +6,13 @@
 #
 build==1.2.1
     # via pip-tools
-certifi==2024.2.2
+certifi==2024.6.2
     # via requests
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via pip-tools
-coverage[toml]==7.5.1
+coverage[toml]==7.5.3
     # via
     #   agentarchives (pyproject.toml)
     #   pytest-cov
@@ -30,7 +30,7 @@ multidict==6.0.5
     # via yarl
 mysqlclient==2.2.4
     # via agentarchives (pyproject.toml)
-packaging==24.0
+packaging==24.1
     # via
     #   build
     #   pytest
@@ -42,7 +42,7 @@ pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.2.1
+pytest==8.2.2
     # via
     #   agentarchives (pyproject.toml)
     #   pytest-cov
@@ -53,7 +53,7 @@ pytest-mock==3.14.0
     # via agentarchives (pyproject.toml)
 pyyaml==6.0.1
     # via vcrpy
-requests==2.32.1
+requests==2.32.3
     # via agentarchives (pyproject.toml)
 tomli==2.0.1
     # via
@@ -61,7 +61,7 @@ tomli==2.0.1
     #   coverage
     #   pip-tools
     #   pytest
-urllib3==1.26.18
+urllib3==1.26.19
     # via
     #   requests
     #   vcrpy
@@ -73,11 +73,11 @@ wrapt==1.16.0
     # via vcrpy
 yarl==1.9.4
     # via vcrpy
-zipp==3.18.2
+zipp==3.19.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.0
     # via pip-tools
-setuptools==70.0.0
+setuptools==70.1.0
     # via pip-tools

@@ -4,7 +4,7 @@
 #
 #    pip-compile --allow-unsafe --output-file=requirements.txt pyproject.toml
 #
-certifi==2024.2.2
+certifi==2024.6.2
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -12,7 +12,7 @@ idna==3.7
     # via requests
 mysqlclient==2.2.4
     # via agentarchives (pyproject.toml)
-requests==2.32.1
+requests==2.32.3
     # via agentarchives (pyproject.toml)
-urllib3==2.2.1
+urllib3==2.2.2
     # via requests
