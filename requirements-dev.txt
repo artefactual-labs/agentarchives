@@ -55,6 +55,8 @@ pyyaml==6.0.1
     # via vcrpy
 requests==2.32.3
     # via agentarchives (pyproject.toml)
+ruff==0.4.9
+    # via agentarchives (pyproject.toml)
 tomli==2.0.1
     # via
     #   build
