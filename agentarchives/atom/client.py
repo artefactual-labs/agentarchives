@@ -26,9 +26,7 @@ class AuthenticationError(AtomError):
 
 class CommunicationError(AtomError):
     def __init__(self, status_code, response):
-        message = "AtoM server responded with status code {} (URL: {})".format(
-            status_code, response.url
-        )
+        message = f"AtoM server responded with status code {status_code} (URL: {response.url})"
         self.response = response
         super().__init__(message)
 
@@ -70,9 +68,7 @@ class AtomClient:
                 output = response.json()
             except Exception:
                 raise AtomError(
-                    "Atom server responded with status {}, but returned a non-JSON document".format(
-                        response.status_code
-                    )
+                    f"Atom server responded with status {response.status_code}, but returned a non-JSON document"
                 )
 
             if "error" in output:

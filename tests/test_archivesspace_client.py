@@ -9,7 +9,6 @@ from agentarchives.archivesspace.client import ArchivesSpaceClient
 from agentarchives.archivesspace.client import ArchivesSpaceError
 from agentarchives.archivesspace.client import CommunicationError
 
-
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH = {"host": "http://localhost:8089", "user": "admin", "passwd": "admin"}
 

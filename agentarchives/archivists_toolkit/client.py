@@ -66,9 +66,7 @@ class ArchivistsToolkitClient:
         record_type = self.resource_type(record_id)
         if record_type is None:
             raise ArchivistsToolkitError(
-                "Could not determine type for record with ID {}; not in database?".format(
-                    record_id
-                )
+                f"Could not determine type for record with ID {record_id}; not in database?"
             )
 
         clause = []
@@ -413,9 +411,7 @@ class ArchivistsToolkitClient:
 
             params = tuple(params)
 
-            sql = "SELECT resourceId FROM Resources WHERE ({}) AND resourceLevel in ('recordgrp', 'collection') ORDER BY title".format(
-                clause
-            )
+            sql = f"SELECT resourceId FROM Resources WHERE ({clause}) AND resourceLevel in ('recordgrp', 'collection') ORDER BY title"
 
         if page is not None:
             start = (page - 1) * page_size
