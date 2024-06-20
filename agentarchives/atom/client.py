@@ -239,7 +239,7 @@ class AtomClient:
         updated_date = {}
 
         # Only single dates are currently supported
-        if "dates" in new_record and type(new_record["dates"]) is list:
+        if "dates" in new_record and isinstance(new_record["dates"], list):
             new_record["dates"] = new_record["dates"][0]
 
         # Map agentarchives date specification to AtoM specification
