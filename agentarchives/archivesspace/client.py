@@ -127,9 +127,7 @@ class ArchivesSpaceClient:
             output = response.json()
         except Exception:
             raise ArchivesSpaceError(
-                "ArchivesSpace server responded with status {}, but returned a non-JSON document".format(
-                    response.status_code
-                )
+                f"ArchivesSpace server responded with status {response.status_code}, but returned a non-JSON document"
             )
 
         if "error" in output:
@@ -174,9 +172,7 @@ class ArchivesSpaceClient:
             output = response.json()
         except Exception:
             raise ArchivesSpaceError(
-                "ArchivesSpace server responded with status {}, but returned a non-JSON document".format(
-                    response.status_code
-                )
+                f"ArchivesSpace server responded with status {response.status_code}, but returned a non-JSON document"
             )
 
         if "error" in output:

@@ -60,12 +60,35 @@ dev = [
   "pytest-cov",
   "pytest-mock",
   "pytest",
+  "ruff",
   "vcrpy",
 ]
 
 [tool.setuptools.dynamic]
 version = {attr = "agentarchives.__version__"}
 readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.ruff.lint]
+# Rule reference: https://docs.astral.sh/ruff/rules/
+select = [
+  "B",
+  "C4",
+  "E",
+  "F",
+  "I",
+  "UP",
+  "W",
+]
+ignore = [
+  "B904",
+  "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"agentarchives/{archivesspace,archivists_toolkit,atom}/__init__.py" = ["F403"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
 
 [tool.pytest.ini_options]
 python_files = [
