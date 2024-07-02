@@ -52,151 +52,20 @@ def test_levels_of_description(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "total": 2,
                     "results": [
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
+                        {"slug": "top-level-fonds", "title": "Top Fonds"},
+                        {"slug": "test-fonds", "title": "Test fonds"},
                     ],
+                    "total": 2,
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "notes": ["Note content"],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
     ],
 )
 def test_listing_collections(get):
@@ -214,24 +83,10 @@ def test_listing_collections(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
                     "children": [
                         {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
                             "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
+                            "children": [{"slug": "test-item"}],
                         }
                     ],
                 }
@@ -253,186 +108,19 @@ def test_collection_list(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "test-fonds"}, {"slug": "top-level-fonds"}],
                     "total": 2,
-                    "results": [
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
-                    ],
                 }
             },
         ),
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "dates": [
-                        {
-                            "start_date": "2014-01-01",
-                            "end_date": "2015-01-01",
-                            "type": "Creation",
-                        }
-                    ],
-                    "notes": ["Note content"],
-                }
-            },
+            status_code=200, **{"json.return_value": {"notes": ["Note content"]}}
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
     ],
 )
 def test_rendering_record_containing_a_note(get):
@@ -449,131 +137,16 @@ def test_rendering_record_containing_a_note(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "test-fonds", "title": "Test fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F2",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        }
-                    ],
                 }
             },
         ),
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "F2",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "dates": [
-                        {
-                            "start_date": "2014-01-01",
-                            "end_date": "2015-01-01",
-                            "type": "Creation",
-                        }
-                    ],
-                    "notes": ["Note content"],
-                }
-            },
+            status_code=200, **{"json.return_value": {"notes": ["Note content"]}}
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "F2",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "F2",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
     ],
 )
 def test_find_collections_search(get):
@@ -603,40 +176,19 @@ def test_find_collections_search_no_results(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "total": 1,
                     "results": [
                         {
-                            "reference_code": "2015044 Aa Ac",
+                            "level_of_description": "Fonds",
                             "slug": "a-fonds-for-testing",
                             "title": "Resource with spaces in the identifier",
-                            "level_of_description": "Fonds",
                         }
                     ],
+                    "total": 1,
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "2015044 Aa Ac",
-                    "title": "Resource with spaces in the identifier",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Resource with spaces in the identifier",
-                    "identifier": "2015044 Aa Ac",
-                    "slug": "a-fonds-for-testing",
-                    "level": "Fonds",
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
     ],
 )
 def test_listing_collections_search_spaces(get):
@@ -656,392 +208,40 @@ def test_listing_collections_search_spaces(get):
                 "json.return_value": {
                     "total": 2,
                     "results": [
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
+                        {"slug": "test-fonds", "title": "Test fonds"},
+                        {"slug": "top-level-fonds", "title": "Top Fonds"},
                     ],
                 }
             },
         ),
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "dates": [
-                        {
-                            "start_date": "2014-01-01",
-                            "end_date": "2015-01-01",
-                            "type": "Creation",
-                        }
-                    ],
-                    "notes": ["Note content"],
-                }
-            },
+            status_code=200, **{"json.return_value": {"notes": ["Note content"]}}
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
         mock.Mock(
             status_code=200,
             **{
                 "json.return_value": {
                     "total": 2,
                     "results": [
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
+                        {"slug": "top-level-fonds", "title": "Top Fonds"},
+                        {"slug": "test-fonds", "title": "Test fonds"},
                     ],
                 }
             },
         ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
+            status_code=200, **{"json.return_value": {"notes": ["Note content"]}}
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "dates": [
-                        {
-                            "start_date": "2014-01-01",
-                            "end_date": "2015-01-01",
-                            "type": "Creation",
-                        }
-                    ],
-                    "notes": ["Note content"],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries with empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
     ],
 )
 def test_listing_collections_sort(get):
@@ -1060,29 +260,9 @@ def test_listing_collections_sort(get):
 @mock.patch(
     "requests.Session.get",
     side_effect=[
+        mock.Mock(status_code=200, **{"json.return_value": {"parent": "test-fonds"}}),
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
-                    "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "notes": ["Note content"],
-                }
-            },
+            status_code=200, **{"json.return_value": {"notes": ["Note content"]}}
         ),
     ],
 )
@@ -1097,29 +277,9 @@ def test_find_component_parent_with_top_level_parent(get):
     "requests.Session.get",
     side_effect=[
         mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-subfonds",
-                    "reference_code": "testfonds-testsubfonds-testitem",
-                    "title": "Test item",
-                    "publication_status": "Draft",
-                    "level_of_description": "Item",
-                }
-            },
+            status_code=200, **{"json.return_value": {"parent": "test-subfonds"}}
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
-                    "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"parent": "test-fonds"}}),
     ],
 )
 def test_find_component_parent_with_non_top_level_parent(get):
@@ -1136,65 +296,24 @@ def test_find_component_parent_with_non_top_level_parent(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
                     "children": [
                         {
-                            "title": "Test subfonds",
                             "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
                             "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
+                            "slug": "test-subfonds",
+                            "title": "Test subfonds",
                         }
                     ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
+                    "identifier": "testfonds",
+                    "level": "Fonds",
+                    "slug": "test-fonds",
                     "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "notes": ["Note content"],
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
-                    "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-subfonds",
-                    "reference_code": "testfonds-testsubfonds-testitem",
-                    "title": "Test item",
-                    "publication_status": "Draft",
-                    "level_of_description": "Item",
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
     ],
 )
 def test_find_resource_children(get):
@@ -1215,53 +334,23 @@ def test_find_resource_children(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
                     "children": [
                         {
-                            "title": "Test subfonds",
                             "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
                             "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
+                            "slug": "test-subfonds",
+                            "title": "Test subfonds",
                         }
                     ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
+                    "identifier": "testfonds",
+                    "level": "Fonds",
+                    "slug": "test-fonds",
                     "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "notes": ["Note content"],
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
-                    "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
     ],
 )
 def test_find_resource_children_recursion_level(get):
@@ -1278,33 +367,15 @@ def test_find_resource_children_recursion_level(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test subfonds",
+                    "children": [],
                     "identifier": "testsubfonds",
-                    "slug": "test-subfonds",
                     "level": "Subfonds",
-                    "children": [
-                        {
-                            "title": "Test item",
-                            "identifier": "testitem",
-                            "slug": "test-item",
-                            "level": "Item",
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
+                    "slug": "test-subfonds",
                     "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
                 }
             },
         ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
     ],
 )
 def test_find_resource_component_children_at_max_recursion_level(get):
@@ -1325,17 +396,8 @@ def test_find_resource_component_children_at_max_recursion_level(get):
                 "json.return_value": {
                     "total": 2,
                     "results": [
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
+                        {"slug": "top-level-fonds", "title": "Top Fonds"},
+                        {"slug": "test-fonds", "title": "Test fonds"},
                     ],
                 }
             },
@@ -1355,15 +417,8 @@ def test_find_collection_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "test-fonds", "title": "Test fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F2",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        }
-                    ],
                 }
             },
         )
@@ -1382,20 +437,11 @@ def test_find_collection_ids_search(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "total": 2,
                     "results": [
-                        {
-                            "reference_code": "toplevelfonds",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        },
-                        {
-                            "reference_code": "testfonds",
-                            "slug": "test-fonds",
-                            "title": "Test fonds",
-                            "level_of_description": "Fonds",
-                        },
+                        {"slug": "top-level-fonds", "title": "Top Fonds"},
+                        {"slug": "test-fonds", "title": "Test fonds"},
                     ],
+                    "total": 2,
                 }
             },
         )
@@ -1414,14 +460,8 @@ def test_count_collection_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "top-level-fonds", "title": "Top Fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F1",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        }
-                    ],
                 }
             },
         )
@@ -1440,101 +480,35 @@ def test_count_collection_ids_search(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Top Fonds",
+                    "children": [
+                        {
+                            "identifier": "dogchild",
+                            "level": "Subfonds",
+                            "slug": "child-of-top-level",
+                            "title": "Dawg Child",
+                        }
+                    ],
                     "identifier": "toplevelfonds",
                     "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
                     "title": "Top Fonds",
-                    "publication_status": "Published",
                 }
             },
         ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
         mock.Mock(
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "top-level-fonds",
-                    "reference_code": "toplevelfonds-dogchild",
-                    "title": "Dawg Child",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
                     "identifier": "testfonds",
-                    "slug": "test-fonds",
                     "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
+                    "slug": "test-fonds",
                     "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "notes": ["Note content"],
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "reference_code": "testfonds-testsubfonds",
-                    "title": "Test subfonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
     ],
 )
 def test_augment_ids(get):
@@ -1554,14 +528,8 @@ def test_augment_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "top-level-fonds", "title": "Top Fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F1",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        }
-                    ],
                 }
             },
         ),
@@ -1569,14 +537,8 @@ def test_augment_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "top-level-fonds", "title": "Top Fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F1",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        }
-                    ],
                 }
             },
         ),
@@ -1584,50 +546,19 @@ def test_augment_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
+                    "results": [{"slug": "top-level-fonds", "title": "Top Fonds"}],
                     "total": 1,
-                    "results": [
-                        {
-                            "reference_code": "F1",
-                            "slug": "top-level-fonds",
-                            "title": "Top Fonds",
-                        }
-                    ],
                 }
             },
         ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
         mock.Mock(
             status_code=200,
             **{
                 "json.return_value": {
-                    "reference_code": "F1",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
                     "identifier": "F1",
                     "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
+                    "title": "Top Fonds",
                 }
             },
         ),
@@ -1635,25 +566,9 @@ def test_augment_ids(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Top Fonds",
                     "identifier": "F1",
                     "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
+                    "title": "Top Fonds",
                 }
             },
         ),
@@ -1669,16 +584,7 @@ def test_identifier_search_exact_match(get):
 @mock.patch(
     "requests.Session.post",
     side_effect=[
-        mock.Mock(
-            status_code=201,
-            **{
-                "json.return_value": {
-                    "id": 463,
-                    "slug": "second-subfonds",
-                    "parent_id": 436,
-                }
-            },
-        )
+        mock.Mock(status_code=201, **{"json.return_value": {"slug": "second-subfonds"}})
     ],
 )
 def test_add_child_resource(post):
@@ -1690,12 +596,7 @@ def test_add_child_resource(post):
 @mock.patch(
     "requests.Session.post",
     side_effect=[
-        mock.Mock(
-            status_code=201,
-            **{
-                "json.return_value": {"id": 464, "slug": "test-child", "parent_id": 463}
-            },
-        )
+        mock.Mock(status_code=201, **{"json.return_value": {"slug": "test-child"}})
     ],
 )
 def test_add_child_resource_component(post):
@@ -1708,14 +609,7 @@ def test_add_child_resource_component(post):
     "requests.Session.post",
     side_effect=[
         mock.Mock(
-            status_code=201,
-            **{
-                "json.return_value": {
-                    "id": 465,
-                    "slug": "another-subfonds",
-                    "parent_id": 436,
-                }
-            },
+            status_code=201, **{"json.return_value": {"slug": "another-subfonds"}}
         )
     ],
 )
@@ -1734,32 +628,13 @@ def test_adding_child_with_note(post):
     "requests.Session.post",
     side_effect=[
         mock.Mock(
-            status_code=201,
-            **{
-                "json.return_value": {
-                    "id": 472,
-                    "slug": "yet-another-subfonds",
-                    "parent_id": 436,
-                }
-            },
+            status_code=201, **{"json.return_value": {"slug": "yet-another-subfonds"}}
         ),
     ],
 )
 @mock.patch(
     "requests.Session.get",
-    side_effect=[
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Yet another subfonds",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
-                }
-            },
-        )
-    ],
+    side_effect=[mock.Mock(status_code=200, **{"json.return_value": {}})],
 )
 def test_posting_contentless_note(get, post):
     client = AtomClient(**AUTH)
@@ -1772,25 +647,11 @@ def test_posting_contentless_note(get, post):
     assert client.get_record(slug)["notes"] == []
 
 
-@mock.patch(
-    "requests.Session.delete",
-    side_effect=[mock.Mock(status_code=204)],
-)
+@mock.patch("requests.Session.delete", side_effect=[mock.Mock(status_code=204)])
 @mock.patch(
     "requests.Session.get",
     side_effect=[
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Another subfonds",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
-                    "notes": ["This is a test note"],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
         mock.Mock(status_code=404),
     ],
 )
@@ -1806,11 +667,7 @@ def test_delete_record_resource(get, delete):
 
 @mock.patch(
     "requests.Session.put",
-    side_effect=[
-        mock.Mock(
-            status_code=200, **{"json.return_value": {"id": 463, "parent_id": 436}}
-        ),
-    ],
+    side_effect=[mock.Mock(status_code=200, **{"json.return_value": {}})],
 )
 @mock.patch(
     "requests.Session.get",
@@ -1819,11 +676,11 @@ def test_delete_record_resource(get, delete):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Second subfonds",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [{"end_date": "2015-01-01", "type": "Creation"}],
+                    "level_of_description": "Subfonds",
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Second subfonds",
                 }
             },
         ),
@@ -1831,11 +688,11 @@ def test_delete_record_resource(get, delete):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Second subfonds",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [{"end_date": "2015-01-01", "type": "Creation"}],
+                    "level_of_description": "Subfonds",
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Second subfonds",
                 }
             },
         ),
@@ -1843,19 +700,19 @@ def test_delete_record_resource(get, delete):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Test edited subfonds",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [
                         {
                             "date": "November, 2014 to November, 2015",
-                            "start_date": "2014-11-01",
                             "end_date": "2015-11-01",
+                            "start_date": "2014-11-01",
                             "type": "Creation",
                         }
                     ],
+                    "level_of_description": "Subfonds",
                     "notes": ["This is a test note"],
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Test edited subfonds",
                 }
             },
         ),
@@ -1887,11 +744,7 @@ def test_edit_archival_object(get, put):
 
 @mock.patch(
     "requests.Session.put",
-    side_effect=[
-        mock.Mock(
-            status_code=200, **{"json.return_value": {"id": 463, "parent_id": 436}}
-        ),
-    ],
+    side_effect=[mock.Mock(status_code=200, **{"json.return_value": {}})],
 )
 @mock.patch(
     "requests.Session.get",
@@ -1900,19 +753,19 @@ def test_edit_archival_object(get, put):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Test edited subseries w/ empty note",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [
                         {
                             "date": "November, 2014 to November, 2015",
-                            "start_date": "2014-11-01",
                             "end_date": "2015-11-01",
+                            "start_date": "2014-11-01",
                             "type": "Creation",
                         }
                     ],
+                    "level_of_description": "Subfonds",
                     "notes": ["Gen note"],
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Test edited subseries with empty note",
                 }
             },
         ),
@@ -1920,19 +773,19 @@ def test_edit_archival_object(get, put):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Test edited subseries w/ empty note",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [
                         {
                             "date": "November, 2014 to November, 2015",
-                            "start_date": "2014-11-01",
                             "end_date": "2015-11-01",
+                            "start_date": "2014-11-01",
                             "type": "Creation",
                         }
                     ],
+                    "level_of_description": "Subfonds",
                     "notes": ["Gen note"],
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Test edited subseries with empty note",
                 }
             },
         ),
@@ -1940,18 +793,18 @@ def test_edit_archival_object(get, put):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Test edited subseries w/ empty note",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [
                         {
                             "date": "November, 2014 to November, 2015",
-                            "start_date": "2014-11-01",
                             "end_date": "2015-11-01",
+                            "start_date": "2014-11-01",
                             "type": "Creation",
                         }
                     ],
+                    "level_of_description": "Subfonds",
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Test edited subseries with empty note",
                 }
             },
         ),
@@ -1963,7 +816,7 @@ def test_edit_record_empty_note(get, put):
     assert original["notes"]
     new_record = {
         "slug": "second-subfonds",
-        "title": "Test edited subseries w/ empty note",
+        "title": "Test edited subseries with empty note",
         "start_date": "2014-11-01",
         "end_date": "2015-11-01",
         "date_expression": "November, 2014 to November, 2015",
@@ -1977,9 +830,7 @@ def test_edit_record_empty_note(get, put):
 @mock.patch(
     "requests.Session.post",
     side_effect=[
-        mock.Mock(
-            status_code=201, **{"json.return_value": {"id": 478, "slug": "kitty-jpg"}}
-        )
+        mock.Mock(status_code=201, **{"json.return_value": {"slug": "kitty-jpg"}})
     ],
 )
 def test_add_digital_object(post):
@@ -1999,18 +850,10 @@ def test_add_digital_object(post):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test edited subseries w/ empty note",
                     "identifier": None,
-                    "slug": "second-subfonds",
                     "level": "Subfonds",
-                    "children": [
-                        {
-                            "title": "Test child",
-                            "identifier": None,
-                            "slug": "test-child",
-                            "level": "Item",
-                        }
-                    ],
+                    "slug": "second-subfonds",
+                    "title": "Test edited subseries with empty note",
                 }
             },
         ),
@@ -2018,18 +861,18 @@ def test_add_digital_object(post):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "test-fonds",
-                    "title": "Test edited subseries w/ empty note",
-                    "publication_status": "Published",
-                    "level_of_description": "Subfonds",
                     "dates": [
                         {
                             "date": "November, 2014 to November, 2015",
-                            "start_date": "2014-11-01",
                             "end_date": "2015-11-01",
+                            "start_date": "2014-11-01",
                             "type": "Creation",
                         }
                     ],
+                    "level_of_description": "Subfonds",
+                    "parent": "test-fonds",
+                    "publication_status": "Published",
+                    "title": "Test edited subseries with empty note",
                 }
             },
         ),
@@ -2050,10 +893,10 @@ def test_date_expression(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test child",
                     "identifier": None,
-                    "slug": "test-child",
                     "level": "Item",
+                    "slug": "test-child",
+                    "title": "Test child",
                 }
             },
         ),
@@ -2061,10 +904,10 @@ def test_date_expression(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "parent": "second-subfonds",
-                    "title": "Test child",
-                    "publication_status": "Published",
                     "level_of_description": "Item",
+                    "parent": "second-subfonds",
+                    "publication_status": "Published",
+                    "title": "Test child",
                 }
             },
         ),
@@ -2072,23 +915,16 @@ def test_date_expression(get):
             status_code=200,
             **{
                 "json.return_value": {
-                    "title": "Test child",
                     "identifier": None,
-                    "slug": "test-child",
                     "level": "Item",
+                    "slug": "test-child",
+                    "title": "Test child",
                 }
             },
         ),
         mock.Mock(
             status_code=200,
-            **{
-                "json.return_value": {
-                    "parent": "second-subfonds",
-                    "title": "Test child",
-                    "publication_status": "Published",
-                    "level_of_description": "Item",
-                }
-            },
+            **{"json.return_value": {}},
         ),
         mock.Mock(
             status_code=200,
@@ -2097,10 +933,10 @@ def test_date_expression(get):
                     "total": 2,
                     "results": [
                         {
+                            "level_of_description": "Fonds",
                             "reference_code": "testfonds",
                             "slug": "test-fonds",
                             "title": "Test fonds",
-                            "level_of_description": "Fonds",
                         },
                         {
                             "reference_code": "toplevelfonds",
@@ -2111,181 +947,12 @@ def test_date_expression(get):
                 }
             },
         ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "testfonds",
-                    "title": "Test fonds",
-                    "publication_status": "Draft",
-                    "level_of_description": "Fonds",
-                    "dates": [
-                        {
-                            "start_date": "2014-01-01",
-                            "end_date": "2015-01-01",
-                            "type": "Creation",
-                        }
-                    ],
-                    "notes": ["Note content"],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries w/ empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Test fonds",
-                    "identifier": "testfonds",
-                    "slug": "test-fonds",
-                    "level": "Fonds",
-                    "children": [
-                        {
-                            "title": "Test subfonds",
-                            "identifier": "testsubfonds",
-                            "slug": "test-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test item",
-                                    "identifier": "testitem",
-                                    "slug": "test-item",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Test edited subseries w/ empty note",
-                            "identifier": None,
-                            "slug": "second-subfonds",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Test child",
-                                    "identifier": None,
-                                    "slug": "test-child",
-                                    "level": "Item",
-                                }
-                            ],
-                        },
-                        {
-                            "title": "Yet another subfonds",
-                            "identifier": None,
-                            "slug": "yet-another-subfonds",
-                            "level": "Subfonds",
-                        },
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "reference_code": "toplevelfonds",
-                    "title": "Top Fonds",
-                    "publication_status": "Published",
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
-        mock.Mock(
-            status_code=200,
-            **{
-                "json.return_value": {
-                    "title": "Top Fonds",
-                    "identifier": "toplevelfonds",
-                    "slug": "top-level-fonds",
-                    "children": [
-                        {
-                            "title": "Dawg Child",
-                            "identifier": "dogchild",
-                            "slug": "child-of-top-level",
-                            "level": "Subfonds",
-                            "children": [
-                                {
-                                    "title": "Dawg Item",
-                                    "identifier": "dogitem",
-                                    "slug": "item-level",
-                                    "level": "Item",
-                                }
-                            ],
-                        }
-                    ],
-                }
-            },
-        ),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
     ],
 )
 def test_empty_dates(get):
