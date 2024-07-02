@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "master"
+      - "dev/remove-vcrpy"
 jobs:
   test:
     name: "Test Python ${{ matrix.python-version }}"
