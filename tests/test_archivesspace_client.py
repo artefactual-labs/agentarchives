@@ -1,9 +1,10 @@
 import collections
+import json
 import os
+from unittest import mock
 
 import pytest
 import requests
-import vcr
 
 from agentarchives.archivesspace.client import ArchivesSpaceClient
 from agentarchives.archivesspace.client import ArchivesSpaceError
@@ -58,15 +59,62 @@ def test_base_url_config(mocker, params, raises, base_url):
     assert client.base_url == base_url, f"Failed with params: {params}"
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_client_logout.yaml"))
-def test_logout():
+SESSION_MOCK = mock.Mock(status_code=200, **{"json.return_value": {"session": "1"}})
+
+
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200, **{"json.return_value": {"status": "session_logged_out"}}
+        ),
+    ],
+)
+def test_logout(session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     client.logout()
     assert client.session is None
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_listing_collections.yaml"))
-def test_listing_collections():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Test fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Some other fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
+)
+def test_listing_collections(get, post):
     client = ArchivesSpaceClient(**AUTH)
     collections = client.find_collections()
     assert len(collections) == 2
@@ -74,20 +122,93 @@ def test_listing_collections():
     assert collections[0]["type"] == "resource"
 
 
-# The cassette for this test contains a record with a singlepart note, which
-# raised errors in a previous version of ArchivesSpaceClient.
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_singlepart_note.yaml"))
-def test_rendering_record_containing_a_singlepart_note():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Some other fonds",
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [
+                                        {
+                                            "content": ["Singlepart note"],
+                                            "jsonmodel_type": "note_singlepart",
+                                            "type": "physdesc",
+                                        }
+                                    ],
+                                    "title": "Test fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
+)
+def test_rendering_record_containing_a_singlepart_note(get, post):
     client = ArchivesSpaceClient(**AUTH)
     collections = client.find_collections()
     assert len(collections) == 2
     assert collections[1]["notes"][0]["content"] == "Singlepart note"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_listing_collections_search.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Test fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        }
+                    ],
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [],
+                    "node_type": "resource",
+                    "title": "Test fonds",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"results": []}}),
+    ],
 )
-def test_listing_collections_search():
+def test_listing_collections_search(get, post):
     client = ArchivesSpaceClient(**AUTH)
     collections = client.find_collections(search_pattern="Test fonds")
     assert len(collections) == 1
@@ -98,10 +219,33 @@ def test_listing_collections_search():
     assert len(no_results) == 0
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_listing_collections_search_spaces.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "collection",
+                                    "notes": [],
+                                    "title": "Resource with spaces in the identifier",
+                                    "uri": "/repositories/2/resources/6",
+                                }
+                            ),
+                        }
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
 )
-def test_listing_collections_search_spaces():
+def test_listing_collections_search_spaces(get, post):
     client = ArchivesSpaceClient(**AUTH)
     collections = client.find_collections(identifier="2015044 Aa Ac")
     assert len(collections) == 1
@@ -109,10 +253,75 @@ def test_listing_collections_search_spaces():
     assert collections[0]["levelOfDescription"] == "collection"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_listing_collections_sort.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Some other fonds",
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Test fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Test fonds",
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "title": "Some other fonds",
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
 )
-def test_listing_collections_sort():
+def test_listing_collections_sort(get, post):
     client = ArchivesSpaceClient(**AUTH)
     asc = client.find_collections(sort_by="asc")
     assert len(asc) == 2
@@ -125,8 +334,21 @@ def test_listing_collections_sort():
     assert desc[0]["type"] == "resource"
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_find_resource_id.yaml"))
-def test_find_resource_id():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "resource": {"ref": "/repositories/2/resources/1"}
+                }
+            },
+        )
+    ],
+)
+def test_find_resource_id(get, post):
     client = ArchivesSpaceClient(**AUTH)
     assert (
         client.find_resource_id_for_component("/repositories/2/archival_objects/3")
@@ -134,8 +356,29 @@ def test_find_resource_id():
     )
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_find_component_parent.yaml"))
-def test_find_component_parent():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "parent": {"ref": "/repositories/2/archival_objects/1"}
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "resource": {"ref": "/repositories/2/resources/1"}
+                }
+            },
+        ),
+    ],
+)
+def test_find_component_parent(get, post):
     client = ArchivesSpaceClient(**AUTH)
     type, id = client.find_parent_id_for_component("/repositories/2/archival_objects/3")
 
@@ -147,10 +390,46 @@ def test_find_component_parent():
     assert id == "/repositories/2/resources/1"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_find_resource_children.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/1",
+                        },
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/2",
+                        },
+                    ],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "level": "fonds",
+                    "notes": [],
+                    "title": "Test fonds",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+    ],
 )
-def test_find_resource_children():
+def test_find_resource_children(get, post):
     client = ArchivesSpaceClient(**AUTH)
     data = client.get_resource_component_and_children("/repositories/2/resources/1")
 
@@ -161,10 +440,48 @@ def test_find_resource_children():
     assert data["type"] == "resource"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_find_resource_children_recursion.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [{"children": []}, {"children": []}],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/1",
+                        },
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/2",
+                        },
+                    ],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+    ],
 )
-def test_find_resource_children_recursion_level():
+def test_find_resource_children_recursion_level(get, post):
     client = ArchivesSpaceClient(**AUTH)
     data = client.get_resource_component_and_children(
         "/repositories/2/resources/1", recurse_max_level=1
@@ -179,12 +496,36 @@ def test_find_resource_children_recursion_level():
     assert data["has_children"] is True
 
 
-@vcr.use_cassette(
-    os.path.join(
-        THIS_DIR, "fixtures", "test_find_resource_children_at_max_recursion_level.yaml"
-    )
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "level": "subseries",
+                                    "record_uri": "/repositories/2/archival_objects/3",
+                                },
+                            ],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/1",
+                        },
+                    ],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+    ],
 )
-def test_find_resource_children_at_max_recursion_level():
+def test_find_resource_children_at_max_recursion_level(get, post):
     client = ArchivesSpaceClient(**AUTH)
     record = client.get_resource_component_and_children(
         "/repositories/2/resources/1", recurse_max_level=1
@@ -193,14 +534,37 @@ def test_find_resource_children_at_max_recursion_level():
     assert record["has_children"] is True
 
 
-@vcr.use_cassette(
-    os.path.join(
-        THIS_DIR,
-        "fixtures",
-        "test_find_resource_component_children_at_max_recursion_level.yaml",
-    )
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "level": "series",
+                    "notes": [],
+                    "resource": {"ref": "/repositories/2/resources/1"},
+                    "uri": "/repositories/2/archival_objects/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": [
+                    {
+                        "level": "subseries",
+                        "notes": [],
+                        "resource": {"ref": "/repositories/2/resources/1"},
+                        "uri": "/repositories/2/archival_objects/3",
+                    },
+                ]
+            },
+        ),
+    ],
 )
-def test_find_resource_component_children_at_max_recursion_level():
+def test_find_resource_component_children_at_max_recursion_level(get, post):
     client = ArchivesSpaceClient(**AUTH)
     record = client.get_resource_component_and_children(
         "/repositories/2/archival_objects/1", recurse_max_level=1
@@ -209,40 +573,156 @@ def test_find_resource_component_children_at_max_recursion_level():
     assert record["has_children"] is True
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_find_collection_ids.yaml"))
-def test_find_collection_ids():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 2,
+                    "results": [
+                        {"uri": "/repositories/2/resources/1"},
+                        {"uri": "/repositories/2/resources/2"},
+                    ],
+                    "this_page": 1,
+                    "total_hits": 2,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 11,
+                    "offset_last": 2,
+                    "results": [],
+                    "this_page": 2,
+                    "total_hits": 2,
+                }
+            },
+        ),
+    ],
+)
+def test_find_collection_ids(get, post):
     client = ArchivesSpaceClient(**AUTH)
     ids = client.find_collection_ids()
     assert ids == ["/repositories/2/resources/1", "/repositories/2/resources/2"]
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_find_collection_ids_search.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 1,
+                    "results": [{"uri": "/repositories/2/resources/2"}],
+                    "this_page": 1,
+                    "total_hits": 1,
+                }
+            },
+        )
+    ],
 )
-def test_find_collection_ids_search():
+def test_find_collection_ids_search(get, post):
     client = ArchivesSpaceClient(**AUTH)
     ids = client.find_collection_ids(search_pattern="Some")
     assert ids == ["/repositories/2/resources/2"]
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_count_collection_ids.yaml"))
-def test_count_collection_ids():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 2,
+                    "results": [
+                        {"uri": "/repositories/2/resources/1"},
+                        {"uri": "/repositories/2/resources/2"},
+                    ],
+                    "this_page": 1,
+                    "total_hits": 2,
+                }
+            },
+        )
+    ],
+)
+def test_count_collection_ids(get, post):
     client = ArchivesSpaceClient(**AUTH)
     ids = client.count_collections()
     assert ids == 2
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_count_collection_ids_search.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 1,
+                    "results": [{"uri": "/repositories/2/resources/2"}],
+                    "this_page": 1,
+                    "total_hits": 1,
+                }
+            },
+        )
+    ],
 )
-def test_count_collection_ids_search():
+def test_count_collection_ids_search(get, post):
     client = ArchivesSpaceClient(**AUTH)
     ids = client.count_collections(search_pattern="Some")
     assert ids == 1
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_find_by_id_refid.yaml"))
-def test_find_by_id_refid():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "archival_objects": [
+                        {
+                            "ref": "/repositories/2/archival_objects/752250",
+                            "_resolved": {
+                                "level": "file",
+                                "notes": [],
+                                "ref_id": "a118514fab1b2ee6a7e9ad259e1de355",
+                                "title": "Test AO",
+                                "uri": "/repositories/2/archival_objects/752250",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+    ],
+)
+def test_find_by_id_refid(get, post):
     client = ArchivesSpaceClient(**AUTH)
     data = client.find_by_id(
         "archival_objects", "ref_id", "a118514fab1b2ee6a7e9ad259e1de355"
@@ -256,8 +736,91 @@ def test_find_by_id_refid():
     assert item["levelOfDescription"] == "file"
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_augment_ids.yaml"))
-def test_augment_ids():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/1",
+                            "title": "Test series",
+                        },
+                        {
+                            "children": [],
+                            "level": "series",
+                            "record_uri": "/repositories/2/archival_objects/2",
+                            "title": "Test series 2",
+                        },
+                    ],
+                    "level": "fonds",
+                    "title": "Test fonds",
+                    "record_uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [],
+                    "title": "Test fonds",
+                    "uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [],
+                    "resource": {"ref": "/repositories/2/resources/1"},
+                    "title": "Test series",
+                    "uri": "/repositories/2/archival_objects/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [],
+                    "resource": {"ref": "/repositories/2/resources/1"},
+                    "title": "Test series 2",
+                    "uri": "/repositories/2/archival_objects/2",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/2",
+                    "title": "Some other fonds",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [],
+                    "repository": {"ref": "/repositories/2"},
+                    "title": "Some other fonds",
+                    "uri": "/repositories/2/resources/2",
+                }
+            },
+        ),
+    ],
+)
+def test_augment_ids(get, post):
     client = ArchivesSpaceClient(**AUTH)
     data = client.augment_resource_ids(
         ["/repositories/2/resources/1", "/repositories/2/resources/2"]
@@ -269,8 +832,8 @@ def test_augment_ids():
     assert data[1]["type"] == "resource"
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_resource_type.yaml"))
-def test_get_resource_type():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+def test_get_resource_type(post):
     client = ArchivesSpaceClient(**AUTH)
     assert client.resource_type("/repositories/2/resources/2") == "resource"
     assert (
@@ -279,17 +842,67 @@ def test_get_resource_type():
     )
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_resource_type.yaml"))
-def test_get_resource_type_raises_on_invalid_input():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+def test_get_resource_type_raises_on_invalid_input(post):
     client = ArchivesSpaceClient(**AUTH)
     with pytest.raises(ArchivesSpaceError):
         client.resource_type("invalid")
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_identifier_exact_match.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 1,
+                    "results": [{"uri": "/repositories/2/resources/1"}],
+                    "this_page": 1,
+                    "total_hits": 1,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 1,
+                    "results": [{"uri": "/repositories/2/resources/1"}],
+                    "this_page": 1,
+                    "total_hits": 1,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                        }
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
 )
-def test_identifier_search_exact_match():
+def test_identifier_search_exact_match(get, post):
     client = ArchivesSpaceClient(**AUTH)
     assert client.find_collection_ids(identifier="F1") == [
         "/repositories/2/resources/1"
@@ -298,8 +911,140 @@ def test_identifier_search_exact_match():
     assert len(client.find_collections(identifier="F1")) == 1
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_identifier_wildcard.yaml"))
-def test_identifier_search_wildcard():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 0,
+                    "offset_first": 1,
+                    "offset_last": 0,
+                    "results": [],
+                    "this_page": 1,
+                    "total_hits": 0,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 0,
+                    "offset_first": 1,
+                    "offset_last": 0,
+                    "results": [],
+                    "this_page": 1,
+                    "total_hits": 0,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 0,
+                    "offset_first": 1,
+                    "offset_last": 0,
+                    "results": [],
+                    "this_page": 1,
+                    "total_hits": 0,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 2,
+                    "results": [
+                        {"uri": "/repositories/2/resources/1"},
+                        {"uri": "/repositories/2/resources/2"},
+                    ],
+                    "this_page": 1,
+                    "total_hits": 2,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 11,
+                    "offset_last": 3,
+                    "results": [],
+                    "this_page": 2,
+                    "total_hits": 3,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 2,
+                    "results": [
+                        {"uri": "/repositories/2/resources/1"},
+                        {"uri": "/repositories/2/resources/2"},
+                    ],
+                    "this_page": 1,
+                    "total_hits": 2,
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "first_page": 1,
+                    "last_page": 1,
+                    "offset_first": 1,
+                    "offset_last": 2,
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/1",
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/2",
+                        },
+                    ],
+                    "this_page": 1,
+                    "total_hits": 2,
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
+)
+def test_identifier_search_wildcard(get, post):
     client = ArchivesSpaceClient(**AUTH)
     # Searching for an identifier prefix with no wildcard returns nothing
     assert client.find_collection_ids(identifier="F") == []
@@ -314,8 +1059,33 @@ def test_identifier_search_wildcard():
     assert len(client.find_collections(identifier="F*")) == 2
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_add_child_resource.yaml"))
-def test_add_child_resource():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/3"}},
+        ),
+    ],
+)
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "level": "collection",
+                    "notes": [],
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/resources/2",
+                }
+            },
+        )
+    ],
+)
+def test_add_child_resource(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child(
         "/repositories/2/resources/2", title="Test child", level="item"
@@ -323,10 +1093,31 @@ def test_add_child_resource():
     assert uri == "/repositories/2/archival_objects/3"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_add_child_resource_component.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/5"}},
+        )
+    ],
 )
-def test_add_child_resource_component():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "resource": {"ref": "/repositories/2/resources/2"},
+                }
+            },
+        )
+    ],
+)
+def test_add_child_resource_component(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child(
         "/repositories/2/archival_objects/1", title="Test child", level="item"
@@ -334,10 +1125,31 @@ def test_add_child_resource_component():
     assert uri == "/repositories/2/archival_objects/5"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_adding_child_with_note.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/24"}},
+        )
+    ],
 )
-def test_adding_child_with_note():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/resources/5",
+                }
+            },
+        )
+    ],
+)
+def test_adding_child_with_note(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child(
         "/repositories/2/resources/5",
@@ -348,10 +1160,32 @@ def test_adding_child_with_note():
     assert uri == "/repositories/2/archival_objects/24"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_posting_contentless_note.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/29"}},
+        )
+    ],
 )
-def test_posting_contentless_note():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+    ],
+)
+def test_posting_contentless_note(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child(
         "/repositories/2/resources/1",
@@ -362,10 +1196,49 @@ def test_posting_contentless_note():
     assert client.get_record(uri)["notes"] == []
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_posting_multiple_notes.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/35"}},
+        )
+    ],
 )
-def test_posting_multiple_notes():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/resources/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [
+                        {
+                            "subnotes": [{"content": "General"}],
+                            "type": "odd",
+                        },
+                        {
+                            "subnotes": [{"content": "Access"}],
+                            "type": "accessrestrict",
+                        },
+                    ],
+                    "uri": "/repositories/2/archival_objects/35",
+                }
+            },
+        ),
+    ],
+)
+def test_posting_multiple_notes(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     uri = client.add_child(
         "/repositories/2/resources/1",
@@ -383,10 +1256,26 @@ def test_posting_multiple_notes():
     assert record["notes"][1]["subnotes"][0]["content"] == "Access"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_delete_record_resource.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/resources/3"}},
+        ),
+        mock.Mock(
+            status_code=404, **{"json.return_value": {"error": "Resource not found"}}
+        ),
+    ],
 )
-def test_delete_record_resource():
+@mock.patch(
+    "requests.Session.delete",
+    side_effect=[
+        mock.Mock(status_code=200, **{"json.return_value": {"status": "Deleted"}})
+    ],
+)
+def test_delete_record_resource(delete, get, post):
     client = ArchivesSpaceClient(**AUTH)
     record_id = "/repositories/2/resources/3"
     assert client.get_record(record_id)
@@ -396,10 +1285,27 @@ def test_delete_record_resource():
         client.get_record(record_id)
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_delete_record_archival_object.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/4"}},
+        ),
+        mock.Mock(
+            status_code=404,
+            **{"json.return_value": {"error": "ArchivalObject not found"}},
+        ),
+    ],
 )
-def test_delete_record_archival_object():
+@mock.patch(
+    "requests.Session.delete",
+    side_effect=[
+        mock.Mock(status_code=200, **{"json.return_value": {"status": "Deleted"}})
+    ],
+)
+def test_delete_record_archival_object(delete, get, post):
     client = ArchivesSpaceClient(**AUTH)
     record_id = "/repositories/2/archival_objects/4"
     assert client.get_record(record_id)
@@ -409,8 +1315,76 @@ def test_delete_record_archival_object():
         client.get_record(record_id)
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_edit_archival_object.yaml"))
-def test_edit_archival_object():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/3"}},
+        )
+    ],
+)
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "dates": [
+                        {
+                            "begin": "2014-01-01",
+                            "end": "2015-01-01",
+                        }
+                    ],
+                    "notes": [],
+                    "title": "Test subseries",
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "dates": [
+                        {
+                            "begin": "2014-01-01",
+                            "end": "2015-01-01",
+                        }
+                    ],
+                    "notes": [],
+                    "title": "Test subseries",
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "dates": [
+                        {
+                            "begin": "2014-11-01",
+                            "end": "2015-11-01",
+                            "expression": "November, 2014 to November, 2015",
+                        }
+                    ],
+                    "notes": [
+                        {
+                            "subnotes": [{"content": "This is a test note"}],
+                            "type": "odd",
+                        }
+                    ],
+                    "title": "Test edited subseries",
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+    ],
+)
+def test_edit_archival_object(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     original = client.get_record("/repositories/2/archival_objects/3")
     assert original["title"] == "Test subseries"
@@ -437,10 +1411,61 @@ def test_edit_archival_object():
     )
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_edit_record_empty_note.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/3"}},
+        )
+    ],
 )
-def test_edit_record_empty_note():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [
+                        {
+                            "subnotes": [{"content": "This is a test note"}],
+                            "type": "odd",
+                        }
+                    ],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "dates": [
+                        {
+                            "begin": "2014-11-01",
+                            "end": "2015-11-01",
+                            "expression": "November, 2014 to November, 2015",
+                        }
+                    ],
+                    "notes": [],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+    ],
+)
+def test_edit_record_empty_note(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     original = client.get_record("/repositories/2/archival_objects/3")
     assert original["notes"]
@@ -457,10 +1482,41 @@ def test_edit_record_empty_note():
     assert not updated["notes"]
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_edit_record_multiple_notes.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/9253"}},
+        )
+    ],
 )
-def test_edit_record_multiple_notes():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(status_code=200, **{"json.return_value": {}}),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [
+                        {
+                            "subnotes": [{"content": "General note content"}],
+                            "type": "odd",
+                        },
+                        {
+                            "subnotes": [{"content": "Access restriction note"}],
+                            "type": "accessrestrict",
+                        },
+                    ],
+                    "uri": "/repositories/2/archival_objects/9253",
+                }
+            },
+        ),
+    ],
+)
+def test_edit_record_multiple_notes(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     new_record = {
         "id": "/repositories/2/archival_objects/9253",
@@ -484,8 +1540,39 @@ def test_edit_record_multiple_notes():
     )
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_add_digital_object.yaml"))
-def test_add_digital_object():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/digital_objects/8"}},
+        ),
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/3"}},
+        ),
+    ],
+)
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "instances": [],
+                    "linked_agents": [],
+                    "notes": [],
+                    "repository": {"ref": "/repositories/2"},
+                    "subjects": [],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        )
+    ],
+)
+def test_add_digital_object(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     do = client.add_digital_object(
         "/repositories/2/archival_objects/3",
@@ -495,10 +1582,53 @@ def test_add_digital_object():
     assert do["id"] == "/repositories/2/digital_objects/8"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_add_digital_object_note.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/digital_objects/7"}},
+        ),
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/3"}},
+        ),
+    ],
 )
-def test_digital_object_with_location_of_originals_note():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "instances": [],
+                    "linked_agents": [],
+                    "notes": [],
+                    "repository": {"ref": "/repositories/2"},
+                    "subjects": [],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "notes": [
+                        {"content": ["The ether"], "type": "originalsloc"},
+                        {"content": ["This is a test note"], "type": "note"},
+                    ],
+                    "repository": {"ref": "/repositories/2"},
+                    "subjects": [],
+                    "uri": "/repositories/2/digital_objects/7",
+                }
+            },
+        ),
+    ],
+)
+def test_digital_object_with_location_of_originals_note(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     do = client.add_digital_object(
         "/repositories/2/archival_objects/3",
@@ -511,14 +1641,53 @@ def test_digital_object_with_location_of_originals_note():
     assert note["type"] == "originalsloc"
 
 
-@vcr.use_cassette(
-    os.path.join(
-        THIS_DIR,
-        "fixtures",
-        "test_adding_a_digital_object_to_a_record_with_a_singlepart_note.yaml",
-    )
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/digital_objects/9"}},
+        ),
+        mock.Mock(
+            status_code=200,
+            **{"json.return_value": {"uri": "/repositories/2/archival_objects/21"}},
+        ),
+    ],
 )
-def test_adding_a_digital_object_to_a_record_with_a_singlepart_note():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "instances": [],
+                    "linked_agents": [],
+                    "notes": [],
+                    "repository": {"ref": "/repositories/2"},
+                    "subjects": [],
+                    "uri": "/repositories/2/archival_objects/21",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "linked_agents": [],
+                    "notes": [{"content": ["This is an abstract"], "type": "note"}],
+                    "repository": {"ref": "/repositories/2"},
+                    "subjects": [],
+                    "uri": "/repositories/2/digital_objects/9",
+                }
+            },
+        ),
+    ],
+)
+def test_adding_a_digital_object_to_a_record_with_a_singlepart_note(
+    get, session_post, post
+):
     client = ArchivesSpaceClient(**AUTH)
     do = client.add_digital_object(
         "/repositories/2/archival_objects/21",
@@ -529,10 +1698,35 @@ def test_adding_a_digital_object_to_a_record_with_a_singlepart_note():
     assert len(note["content"]) == 1
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_add_digital_object_component.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "uri": "/repositories/2/digital_object_components/3"
+                }
+            },
+        )
+    ],
 )
-def test_add_digital_object_component():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/digital_objects/1",
+                }
+            },
+        )
+    ],
+)
+def test_add_digital_object_component(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     doc = client.add_digital_object_component(
         "/repositories/2/digital_objects/1",
@@ -544,10 +1738,45 @@ def test_add_digital_object_component():
     assert doc["title"] == "This is a test DOC"
 
 
-@vcr.use_cassette(
-    os.path.join(THIS_DIR, "fixtures", "test_add_nested_digital_object_component.yaml")
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.post",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "uri": "/repositories/2/digital_object_components/5"
+                }
+            },
+        )
+    ],
 )
-def test_add_nested_digital_object_component():
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/digital_objects/1",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "parent": {"ref": "/repositories/2/digital_object_components/3"},
+                    "repository": {"ref": "/repositories/2"},
+                    "uri": "/repositories/2/digital_object_components/5",
+                }
+            },
+        ),
+    ],
+)
+def test_add_nested_digital_object_component(get, session_post, post):
     client = ArchivesSpaceClient(**AUTH)
     parent = "/repositories/2/digital_object_components/3"
     doc = client.add_digital_object_component(
@@ -559,8 +1788,31 @@ def test_add_nested_digital_object_component():
     assert client.get_record(doc["id"])["parent"]["ref"] == parent
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_date_expression.yaml"))
-def test_date_expression():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "dates": [
+                        {
+                            "begin": "2014-11-01",
+                            "end": "2015-11-01",
+                            "expression": "November, 2014 to November, 2015",
+                        }
+                    ],
+                    "level": "subseries",
+                    "notes": [],
+                    "uri": "/repositories/2/archival_objects/3",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": [{}]}),
+    ],
+)
+def test_date_expression(get, post):
     client = ArchivesSpaceClient(**AUTH)
     record = client.get_resource_component_and_children(
         "/repositories/2/archival_objects/3", recurse_max_level=1
@@ -568,8 +1820,80 @@ def test_date_expression():
     assert record["date_expression"] == "November, 2014 to November, 2015"
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_empty_dates.yaml"))
-def test_empty_dates():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "level": "series",
+                    "notes": [],
+                    "uri": "/repositories/2/archival_objects/2",
+                }
+            },
+        ),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": [
+                    {
+                        "level": "series",
+                        "notes": [],
+                        "uri": "/repositories/2/archival_objects/7",
+                    }
+                ]
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": []}),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "children": [],
+                    "level": "fonds",
+                    "record_uri": "/repositories/2/resources/2",
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"notes": []}}),
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "repository": {"ref": "/repositories/2"},
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/1",
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "repository": {"ref": "/repositories/2"},
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/2",
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
+)
+def test_empty_dates(get, post):
     client = ArchivesSpaceClient(**AUTH)
     record = client.get_resource_component_children(
         "/repositories/2/archival_objects/2"
@@ -585,8 +1909,62 @@ def test_empty_dates():
     assert collections[0]["date_expression"] == ""
 
 
-@vcr.use_cassette(os.path.join(THIS_DIR, "fixtures", "test_contentless_notes.yaml"))
-def test_contentless_notes():
+@mock.patch("requests.post", side_effect=[SESSION_MOCK])
+@mock.patch(
+    "requests.Session.get",
+    side_effect=[
+        mock.Mock(
+            status_code=200,
+            **{
+                "json.return_value": {
+                    "results": [
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "uri": "/repositories/2/resources/1",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/1",
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "fonds",
+                                    "notes": [],
+                                    "uri": "/repositories/2/resources/2",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/2",
+                        },
+                        {
+                            "json": json.dumps(
+                                {
+                                    "level": "collection",
+                                    "notes": [
+                                        {
+                                            "type": "bioghist",
+                                            "subnotes": [
+                                                {"items": ["Second"], "title": "First"}
+                                            ],
+                                        }
+                                    ],
+                                    "uri": "/repositories/2/resources/4",
+                                }
+                            ),
+                            "uri": "/repositories/2/resources/4",
+                        },
+                    ],
+                }
+            },
+        ),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+        mock.Mock(status_code=200, **{"json.return_value": {"children": []}}),
+    ],
+)
+def test_contentless_notes(get, post):
     client = ArchivesSpaceClient(**AUTH)
     collections = client.find_collections()
     assert collections[-1]["notes"][0]["type"] == "bioghist"
