@@ -17,7 +17,7 @@ dynamic = [
   "readme",
 ]
 description = "Clients to retrieve, add, and modify records from archival management systems."
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 dependencies = [
   "mysqlclient",
@@ -35,7 +35,6 @@ classifiers = [
   "License :: OSI Approved :: GNU Affero General Public License v3",
   "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -109,11 +108,10 @@ omit = [
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    envlist = py{38,39,310,311,312}, linting
+    envlist = py{39,310,311,312}, linting
 
     [gh-actions]
     python =
-        3.8: py38
         3.9: py39
         3.10: py310
         3.11: py311
