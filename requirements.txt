@@ -10,7 +10,7 @@ charset-normalizer==3.4.1
     # via requests
 idna==3.10
     # via requests
-mysqlclient==2.2.6
+mysqlclient==2.2.7
     # via agentarchives (pyproject.toml)
 requests==2.32.3
     # via agentarchives (pyproject.toml)
