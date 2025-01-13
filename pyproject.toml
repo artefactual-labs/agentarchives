@@ -39,6 +39,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 authors = [
   {name = "Artefactual Systems Inc.", email = "info@artefactual.com"}
@@ -108,14 +109,7 @@ omit = [
 [tool.tox]
 legacy_tox_ini = """
     [tox]
-    envlist = py{39,310,311,312}, linting
-
-    [gh-actions]
-    python =
-        3.9: py39
-        3.10: py310
-        3.11: py311
-        3.12: py312
+    envlist = py, linting
 
     [testenv]
     deps = -r {toxinidir}/requirements-dev.txt
