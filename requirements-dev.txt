@@ -6,13 +6,13 @@
 #
 build==1.3.0
     # via pip-tools
-certifi==2025.11.12
+certifi==2026.1.4
     # via requests
 charset-normalizer==3.4.4
     # via requests
 click==8.3.1
     # via pip-tools
-coverage[toml]==7.12.0
+coverage[toml]==7.13.1
     # via
     #   agentarchives (pyproject.toml)
     #   pytest-cov
@@ -40,7 +40,7 @@ pyproject-hooks==1.2.0
     # via
     #   build
     #   pip-tools
-pytest==9.0.1
+pytest==9.0.2
     # via
     #   agentarchives (pyproject.toml)
     #   pytest-cov
@@ -51,7 +51,7 @@ pytest-mock==3.15.1
     # via agentarchives (pyproject.toml)
 requests==2.32.5
     # via agentarchives (pyproject.toml)
-ruff==0.14.8
+ruff==0.14.10
     # via agentarchives (pyproject.toml)
 tomli==2.3.0
     # via
@@ -61,7 +61,7 @@ tomli==2.3.0
     #   pytest
 typing-extensions==4.15.0
     # via exceptiongroup
-urllib3==2.6.0
+urllib3==2.6.3
     # via requests
 wheel==0.45.1
     # via pip-tools
