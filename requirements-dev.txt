@@ -4,15 +4,15 @@
 #
 #    pip-compile --allow-unsafe --extra=dev --output-file=requirements-dev.txt pyproject.toml
 #
-build==1.4.0
+build==1.4.2
     # via pip-tools
-certifi==2026.1.4
+certifi==2026.2.25
     # via requests
-charset-normalizer==3.4.4
+charset-normalizer==3.4.7
     # via requests
-click==8.3.1
+click==8.3.2
     # via pip-tools
-coverage[toml]==7.13.3
+coverage[toml]==7.13.5
     # via
     #   agentarchives (pyproject.toml)
     #   pytest-cov
@@ -22,20 +22,20 @@ idna==3.11
     # via requests
 iniconfig==2.3.0
     # via pytest
-mysqlclient==2.2.7
+mysqlclient==2.2.8
     # via agentarchives (pyproject.toml)
 packaging==26.0
     # via
     #   build
     #   pytest
     #   wheel
-pip-tools==7.5.2
+pip-tools==7.5.3
     # via agentarchives (pyproject.toml)
 pluggy==1.6.0
     # via
     #   pytest
     #   pytest-cov
-pygments==2.19.2
+pygments==2.20.0
     # via pytest
 pyproject-hooks==1.2.0
     # via
@@ -46,15 +46,15 @@ pytest==9.0.2
     #   agentarchives (pyproject.toml)
     #   pytest-cov
     #   pytest-mock
-pytest-cov==7.0.0
+pytest-cov==7.1.0
     # via agentarchives (pyproject.toml)
 pytest-mock==3.15.1
     # via agentarchives (pyproject.toml)
-requests==2.32.5
+requests==2.33.1
     # via agentarchives (pyproject.toml)
-ruff==0.14.14
+ruff==0.15.9
     # via agentarchives (pyproject.toml)
-tomli==2.4.0
+tomli==2.4.1
     # via
     #   build
     #   coverage
@@ -68,7 +68,7 @@ wheel==0.46.3
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==26.0
+pip==26.0.1
     # via pip-tools
-setuptools==80.10.2
+setuptools==82.0.1
     # via pip-tools
