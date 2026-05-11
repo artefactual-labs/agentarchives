@@ -8,11 +8,11 @@ certifi==2026.4.22
     # via requests
 charset-normalizer==3.4.7
     # via requests
-idna==3.13
+idna==3.14
     # via requests
 mysqlclient==2.2.8
     # via agentarchives (pyproject.toml)
-requests==2.33.1
+requests==2.34.0
     # via agentarchives (pyproject.toml)
-urllib3==2.6.3
+urllib3==2.7.0
     # via requests
