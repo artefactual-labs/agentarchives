@@ -57,7 +57,9 @@ Then, initiate a new client, passing in the URL, user name, password, port and
 repository for your AS instance:
 
 ```python
-client = archivesspace.ArchivesSpaceClient('http://localhost', 'admin', 'admin', 8089, 2)
+client = archivesspace.ArchivesSpaceClient(
+    "http://localhost", "admin", "admin", 8089, 2
+)
 ```
 
 Using your client, call one of the included functions (documented in `client.py`).
@@ -148,7 +150,7 @@ Then, initiate a new client, passing in the URL, REST API access token, password
 and port for your AtoM instance:
 
 ```python
-client = atom.AtomClient('http://localhost', '68405800c6612599', 80)
+client = atom.AtomClient("http://localhost", "68405800c6612599", 80)
 ```
 
 Using your client, call one of the included functions (documented in `client.py`).

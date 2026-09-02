@@ -4,5 +4,6 @@ dist
 *.pyc
 .cache
 /.env/
-/.tox/
+/.venv/
 /.coverage
+/coverage.xml
