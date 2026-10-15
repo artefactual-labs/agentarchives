@@ -47,15 +47,17 @@ AUTH = {"host": "http://localhost:8089", "user": "admin", "passwd": "admin"}
         ),
     ],
 )
-def test_base_url_config(mocker, params, raises, base_url):
-    kwargs = {"user": "foo", "passwd": "bar"}
+def test_base_url_config(
+    params: dict[str, str | int | None], raises: bool, base_url: str | None
+) -> None:
+    kwargs: dict[str, str | int | None] = {"user": "foo", "passwd": "bar"}
     kwargs.update(params)
     if raises:
         with pytest.raises((AttributeError, requests.exceptions.InvalidURL)):
             ArchivesSpaceClient(**kwargs)
         return
-    mocker.patch("agentarchives.archivesspace.ArchivesSpaceClient._login")
-    client = ArchivesSpaceClient(**kwargs)
+    with mock.patch("agentarchives.archivesspace.ArchivesSpaceClient._login"):
+        client = ArchivesSpaceClient(**kwargs)
     assert client.base_url == base_url, f"Failed with params: {params}"
 
 
